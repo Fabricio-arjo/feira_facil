@@ -1,6 +1,6 @@
 # Feira Fácl
 
-App para quem quem não quer extrapolar o orçamento ao encher o carrinho de compras no supermercado.
+App para quem não quer extrapolar o orçamento ao encher o carrinho de compras no supermercado.
 
 
 
