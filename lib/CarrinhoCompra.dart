@@ -417,7 +417,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       appBar: AppBar(
         backgroundColor: Colors.purple,
         title: Text(
-          "Adicionar Item",
+          "Adicionar Itens",
           style: TextStyle(
             fontStyle: FontStyle.normal,
             fontWeight: FontWeight.bold,
@@ -487,7 +487,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
                  leading: Checkbox(
                       
-                      
+                    activeColor: Colors.green,
                                          
                      value: item.selected, 
 
@@ -509,9 +509,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                  ),
                                               
                 //leading: item.selected ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),   
-                                                   
-                 title: Text(item.nome + " - "+ item.total.toStringAsFixed(2)),
-               
+
+                 title: item.status == 1 ?  Text(item.nome + " - "+ item.total.toStringAsFixed(2), style: TextStyle(color: Colors.green),): Text(item.nome + " - "+ item.total.toStringAsFixed(2)),
+
+                 
                  //Exibir ações dentro do item de lista.
                               
                   trailing: Row(

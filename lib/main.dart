@@ -36,12 +36,17 @@ void main(){ runApp(
          valorController.clear();
        });
        
-        Navigator.push(
+        /*Navigator.push(
               context,
               MaterialPageRoute(
                builder:(context) => CarrinhoCompra(valor: limite,)
              )
-        );
+        );*/
+
+        Navigator.pushReplacement(context,MaterialPageRoute(
+               builder:(context) => CarrinhoCompra(valor: limite,)
+        ));
+
                
      
 
