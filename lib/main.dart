@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:feira_facil/CarrinhoCompra.dart';
+import 'package:feira_facil/model/Item.dart';
+import 'package:feira_facil/helper/ItemHelper.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main(){ runApp(
   
@@ -28,14 +32,16 @@ void main(){ runApp(
      TextEditingController valorController = TextEditingController();
      double limite;
      String prefix="R\$";
-
+     
+     
      void limiteGasto(){
 
        setState(() {
          limite = double.parse(valorController.text);
          valorController.clear();
        });
-       
+
+              
         /*Navigator.push(
               context,
               MaterialPageRoute(

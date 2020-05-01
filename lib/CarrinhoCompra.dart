@@ -26,10 +26,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   
   double _saldo;
  
-
-  
-  
-  
+ 
 
   //Lista para recuperar itens
   List<Item> _itens = List<Item>();
@@ -404,20 +401,33 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         });
   }
 
- 
- 
- 
+  _resetLimit() async{
+      await _db.atualizaLimit();
+  }
 
 
+ 
   @override
   Widget build(BuildContext context) {
-
-  
+   
+ 
     return Scaffold(
+
       appBar: AppBar(
         backgroundColor: Colors.purple,
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios,color: Colors.white,), 
+      
+               onPressed:(){
+                   _resetLimit();
+                    Navigator.pushReplacementNamed(context, "/");
+                            
+              }              
+               
+      ),
+
         title: Text(
-          "Adicionar Itens",
+          "Lista de Compras",
           style: TextStyle(
             fontStyle: FontStyle.normal,
             fontWeight: FontWeight.bold,
@@ -467,25 +477,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                 
                 child: ListTile(                        
 
-                  /*onTap: (){
-
-                    setState(() {
-                        item.selected = !item.selected;
-                        //log(item.selected.toString());
-                       });
-                                     
-                     if (valor < item.total) {
-                           _disponivel(0 , item.selected);
-                           _controleSaldo(item.total);
-                      } else {
-                         _disponivel(item.total , item.selected);
-                     }
-                   },*/
-                                 
-                 //selected: item.selected,
-                
-
-                 leading: Checkbox(
+                leading: Checkbox(
                       
                     activeColor: Colors.green,
                                          
