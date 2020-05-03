@@ -15,7 +15,6 @@ class CarrinhoCompra extends StatefulWidget {
 }
 
 class _CarrinhoCompraState extends State<CarrinhoCompra> {
- 
   _CarrinhoCompraState(this.valor);
   double valor;
 
@@ -23,10 +22,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   TextEditingController _precoController = TextEditingController();
   TextEditingController _qtdeController = TextEditingController();
   var _db = ItemHelper();
-  
+
   double _saldo;
- 
- 
 
   //Lista para recuperar itens
   List<Item> _itens = List<Item>();
@@ -114,10 +111,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
  }*/
 
-
-
-
-
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
     String textoSalvarAtualizar = "";
@@ -127,7 +120,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       _nomeController.text = "";
       _precoController.text = "";
       _qtdeController.text = "";
-     
 
       textoSalvarAtualizar = "Salvar";
     } else {
@@ -136,7 +128,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       _nomeController.text = item.nome;
       _precoController.text = item.preco.toString();
       _qtdeController.text = item.qtde.toString();
-     
 
       textoSalvarAtualizar = "Atualizar";
     }
@@ -207,20 +198,18 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   }
 
   _recuperarItens() async {
-    
-       
     List itensRecuperados = await _db.recuperarItens();
 
-   //Guardar dentro do for na lista temporaria
+    //Guardar dentro do for na lista temporaria
     List<Item> listaTemporaria = List<Item>();
-    
+
     for (var itm in itensRecuperados) {
       Item item = Item.fromMap(itm);
-       
+
       listaTemporaria.add(item);
     }
     setState(() {
-       _itens = listaTemporaria;
+      _itens = listaTemporaria;
     });
 
     listaTemporaria = null;
@@ -228,28 +217,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     print("Lista itens: " + itensRecuperados.toString());
   }
 
-
-
-
-  _salvarAtualizarItem( {Item itemSelecionado}) async {
-
-    
+  _salvarAtualizarItem({Item itemSelecionado}) async {
     String nome = _nomeController.text;
     double preco = double.parse(_precoController.text);
     int qtde = int.parse(_qtdeController.text);
     double total = preco * qtde;
     int status;
-    
-        
-        
+
     if (itemSelecionado == null) {
       //Salvando
-       
-                    
+
       //Objeto da classe item
-      Item item = Item(nome, preco, qtde, total, DateTime.now().toString(),status);
+      Item item =
+          Item(nome, preco, qtde, total, DateTime.now().toString(), status);
       int resultado = await _db.salvarItem(item);
-   
     } else {
       //Atualizar
 
@@ -258,7 +239,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       itemSelecionado.qtde = qtde;
       itemSelecionado.total = total;
       itemSelecionado.data = DateTime.now().toString();
-      
+
       //Método do Item Helper
       int resultado = await _db.atualizarItem(itemSelecionado);
     }
@@ -270,22 +251,18 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     _recuperarItens();
   }
 
+  _atualizaStatus(Item itemEscolhido, bool selecionado) async {
+    if (selecionado == true && itemEscolhido.status != 1) {
+      itemEscolhido.status = 1;
 
-  _atualizaStatus(Item itemEscolhido, bool selecionado) async{
-          
-     if(selecionado==true && itemEscolhido.status!=1){
-        itemEscolhido.status = 1;
-               
-        print(itemEscolhido.nome +" -> "+ itemEscolhido.status.toString());
-    
-     }else if(selecionado==false){
-        itemEscolhido.status=0;
-    
-        print(itemEscolhido.nome +" -> "+ itemEscolhido.status.toString());
-     }
+      print(itemEscolhido.nome + " -> " + itemEscolhido.status.toString());
+    } else if (selecionado == false) {
+      itemEscolhido.status = 0;
+
+      print(itemEscolhido.nome + " -> " + itemEscolhido.status.toString());
+    }
 
     int resultado = await _db.atualizarItem(itemEscolhido);
-    
   }
 
   /*_salvarItem() async {
@@ -314,7 +291,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
  }*/
 
   _formatarData(String data) {
-
     initializeDateFormatting("pt_BR");
 
     //Year -> y month-> M Day -> d
@@ -330,50 +306,44 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   @override
   void initState() {
-
     super.initState();
 
     _recuperarItens();
-
   }
 
   _removerItem(int id, double compra, bool operacao) async {
-      
-      if(operacao == true){
-        setState(() {
-            valor +=compra;
-            
-        });
-      }
+    if (operacao == true) {
+      setState(() {
+        valor += compra;
+      });
+    }
     await _db.removerItem(id);
-    
-     _recuperarItens();
+
+    _recuperarItens();
   }
 
-   //Atualiza o saldo após a adição de itens no carrinho
-   
-    _disponivel(double compra, bool operacao) {
+  //Atualiza o saldo após a adição de itens no carrinho
 
-        if ((compra != null) && (operacao == true)) {
-          setState(() {
-            valor -= compra;
-          });
-          print("Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
-        }else if((compra != null) && (operacao == false)){
-            setState(() {
-            valor += compra;
-          });
-          print("Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
-        }else {
-          valor = valor;
-        }
+  _disponivel(double compra, bool operacao) {
+    if ((compra != null) && (operacao == true)) {
+      setState(() {
+        valor -= compra;
+      });
+      print(
+          "Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
+    } else if ((compra != null) && (operacao == false)) {
+      setState(() {
+        valor += compra;
+      });
+      print(
+          "Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
+    } else {
+      valor = valor;
+    }
   }
-
-
 
   _controleSaldo(double totalItem) {
-    
-  showDialog(
+    showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -384,7 +354,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
               textAlign: TextAlign.center,
             ),
             content: Text(
-              "Valor R\$${totalItem}0 ultrapassa o saldo disponível para compra.",
+              "Valor R\$ ${totalItem.toStringAsFixed(1)}0 ultrapassa o saldo disponível para compra.",
               style: TextStyle(
                 color: null,
                 fontSize: 15,
@@ -401,33 +371,36 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         });
   }
 
-  _resetLimit() async{
-      await _db.atualizaLimit();
+  
+  _checkLenght() async {
+
+   List itens = await _db.recuperarItens();
+
+   //print("Length ${itens.length}");
+       return itens.length;    
   }
 
 
- 
   @override
   Widget build(BuildContext context) {
+    
    
- 
-    return Scaffold(
 
+
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
         leading: IconButton(
-            icon: Icon(Icons.arrow_back_ios,color: Colors.white,), 
-      
-               onPressed:(){
-                   _resetLimit();
-                    Navigator.pushReplacementNamed(context, "/");
-                            
-              }              
-               
-      ),
-
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              await _db.atualizaLimit();
+              Navigator.pushReplacementNamed(context, "/");
+            }),
         title: Text(
-          "Lista de Compras",
+          "Items",
           style: TextStyle(
             fontStyle: FontStyle.normal,
             fontWeight: FontWeight.bold,
@@ -442,7 +415,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             child: Text(
               "R\$ ${valor.toStringAsFixed(2)}",
               style: TextStyle(
-                  color: Colors.green,
+                  color: Colors.blue,
                   fontSize: 35,
                   fontStyle: FontStyle.italic,
                   fontWeight: FontWeight.bold),
@@ -450,121 +423,141 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           ),
           //Text("${widget.valor}",
 
+
+ 
           Expanded(
+
+              /*child: Center(
+                child: Text(
+              "Null",
+              textAlign: TextAlign.center,
+            )),*/
+          
+                            
+            child: _itens.length != 0 ?
             
-            child: ListView.builder(
+            ListView.builder(
+          
             itemCount: _itens.length,
             itemBuilder: (context, index) {
-              
               //Recuperar item dentro do método recuperarItens
               final item = _itens[index];
 
               //item.selected !=item.selected;
-              
-              if (item.status==1) {
-                   item.selected=true;
-                  
-              } else if(item.status == 0) {
-                    item.selected=false;
-              }
 
+              if (item.status == 1) {
+                item.selected = true;
+              } else if (item.status == 0) {
+                item.selected = false;
+              }
+                
               return Card(
 
                 color: Colors.grey[50],
                 elevation: 2.0,
-
                 key: Key(item.toString()),
-                
-                child: ListTile(                        
-
-                leading: Checkbox(
-                      
-                    activeColor: Colors.green,
-                                         
-                     value: item.selected, 
-
-                      onChanged:(bool novoValor){
+                child: ListTile(
+                  leading: Checkbox(
+                      activeColor: Colors.green,
+                      value: item.selected,
+                      onChanged: (bool novoValor) {
                         setState(() {
-                            item.selected = novoValor;
-                            _atualizaStatus(item,item.selected);
+                          item.selected = novoValor;
+                          _atualizaStatus(item, item.selected);
                         });
 
-                       
                         if (valor < item.total) {
-                           _disponivel(0 , item.selected);
-                           _controleSaldo(item.total);
-                      } else {
-                         _disponivel(item.total , item.selected);
-                     }
+                          item.status = 0;
+                          _disponivel(0, item.selected);
+                          _controleSaldo(item.total);
+                        } else {
+                          _disponivel(item.total, item.selected);
+                        }
+                      }),
 
-                      }
-                 ),
-                                              
-                //leading: item.selected ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),   
+                  //leading: item.selected ? Icon(Icons.check_box) : Icon(Icons.check_box_outline_blank),
 
-                 title: item.status == 1 ?  Text(item.nome + " - "+ item.total.toStringAsFixed(2), style: TextStyle(color: Colors.green),): Text(item.nome + " - "+ item.total.toStringAsFixed(2)),
+                  title: item.status == 1
+                      ? Text(
+                          item.nome + " - " + item.total.toStringAsFixed(2),
+                          style: TextStyle(color: Colors.green),
+                        )
+                      : Text(item.nome + " - " + item.total.toStringAsFixed(2)),
 
-                 
-                 //Exibir ações dentro do item de lista.
-                              
-                  trailing: Row(
-                    
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          _exibirTelaCadastro(item: item);
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 20),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.green,
-                          ),
+                  //Exibir ações dentro do item de lista.
+
+                  trailing: item.status != 1
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                _exibirTelaCadastro(item: item);
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 20),
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text("Excluir"),
+                                        content: Text("Confirmar exclusão ?"),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            onPressed: () {
+                                              _removerItem(item.id, item.total,
+                                                  item.selected);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Icon(Icons.check),
+                                          ),
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Icon(Icons.close))
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.only(right: 0),
+                                child: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      : Icon(
+                          Icons.shopping_cart,
+                          color: Colors.green,
+                          size: 40,
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text("Excluir"),
-                                  content: Text("Confirmar exclusão ?"),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                      onPressed: () {
-                                        _removerItem(item.id , item.total, item.selected);
-                                        Navigator.pop(context);
-                                      },
-                                      child: Icon(Icons.check),
-                                    ),
-                                    FlatButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Icon(Icons.close))
-                                  ],
-                                );
-                              });
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(right: 0),
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
                 ),
-
-
               );
-
             },
-          ))
+          )
+
+          :  
+          
+          Center(
+                child: Text(
+              "Lista vazia",
+              textAlign: TextAlign.center,
+            )
+          )
+
+         )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -577,8 +570,3 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     );
   }
 }
-
-
-
-
-

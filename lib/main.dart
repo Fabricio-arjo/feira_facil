@@ -109,7 +109,7 @@ void main(){ runApp(
                             ),
                             
                            Center(
-                                  child: Text("Controle seu gasto",
+                                  child: Text("Control you cash",
                                     style: TextStyle(
                                         color: Colors.purple,
                                         fontWeight: FontWeight.bold,
@@ -147,10 +147,8 @@ void main(){ runApp(
                                     ),
                                   
                                   hintText: "Ex: 100.00",
-                                  border: new OutlineInputBorder(
-                                    borderSide: new BorderSide(color: Colors.green),
-                                      
-                                  ),
+                                  border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(20)),
                                   prefixText: prefix,
                                   prefixStyle: TextStyle(
                                     color: Colors.green,
