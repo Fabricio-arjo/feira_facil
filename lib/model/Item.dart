@@ -11,11 +11,12 @@ class Item{
   String data;
   bool selected = false;
   int status;
+  int compra_id;
   
 
   //Objeto item
 
-  Item(this.nome, this.preco, this.qtde, this.total,this.data,this.status);
+  Item(this.nome, this.preco, this.qtde, this.total,this.data,this.status,this.compra_id);
 
   //Receber map e converter para objeto
   Item.fromMap(Map map){
@@ -26,7 +27,7 @@ class Item{
     this.qtde = map["qtde"];
     this.total = map["total"];
     this.status = map["status"];
-    
+    this.compra_id = map["compra_id"];
         
 
   }
@@ -41,6 +42,7 @@ class Item{
       "total":this.total,
       "data":this.data,
       "status":this.status,
+      "compra_id":this.compra_id,
      
       
       

@@ -35,7 +35,8 @@ class ItemHelper {
         "qtde INT,"
         "total DOUBLE,"
         "data DATETIME,"
-        "status INTEGER)";
+        "status INTEGER,"
+        "compra_id INTEGER)";
 
     await db.execute(sql);
   }

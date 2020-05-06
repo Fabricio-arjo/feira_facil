@@ -1,10 +1,11 @@
 import 'dart:developer';
-
 import 'package:feira_facil/model/Item.dart';
 import 'package:flutter/material.dart';
-import 'package:feira_facil/helper/ItemHelper.dart';
+//import 'package:feira_facil/helper/ItemHelper.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'ListaCompras.dart';
+import 'package:feira_facil/helper/DatabaseHelper.dart';
 
 class CarrinhoCompra extends StatefulWidget {
   CarrinhoCompra({this.valor});
@@ -21,7 +22,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   TextEditingController _nomeController = TextEditingController();
   TextEditingController _precoController = TextEditingController();
   TextEditingController _qtdeController = TextEditingController();
-  var _db = ItemHelper();
+  var _db = DatabaseHelper();
 
   double _saldo;
 
@@ -223,13 +224,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     int qtde = int.parse(_qtdeController.text);
     double total = preco * qtde;
     int status;
+    int compra_id = 0; 
 
     if (itemSelecionado == null) {
       //Salvando
 
       //Objeto da classe item
       Item item =
-          Item(nome, preco, qtde, total, DateTime.now().toString(), status);
+          Item(nome, preco, qtde, total, DateTime.now().toString(), status, compra_id);
       int resultado = await _db.salvarItem(item);
     } else {
       //Atualizar
@@ -291,6 +293,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
  }*/
 
   _formatarData(String data) {
+
     initializeDateFormatting("pt_BR");
 
     //Year -> y month-> M Day -> d
@@ -384,9 +387,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   @override
   Widget build(BuildContext context) {
     
-   
-
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -406,7 +406,19 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             fontWeight: FontWeight.bold,
           ),
         ),
+
         centerTitle: true,
+
+        actions: <Widget>[
+           IconButton(
+               icon: Icon(Icons.playlist_add_check), 
+               onPressed: (){
+                  Navigator.pushNamed(context, "/historico");
+               }
+            )
+        ],
+                   
+      
       ),
       body: Column(
         children: <Widget>[
@@ -479,10 +491,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
                   title: item.status == 1
                       ? Text(
-                          item.nome + " - " + item.total.toStringAsFixed(2),
+                          item.nome + " - " + item.total.toStringAsFixed(2)+"  Data: " + item.data.toString() ,
                           style: TextStyle(color: Colors.green),
                         )
-                      : Text(item.nome + " - " + item.total.toStringAsFixed(2)),
+                      : Text(item.nome + " - " + item.total.toStringAsFixed(2) +"  Data: " + item.data.toString()),
 
                   //Exibir ações dentro do item de lista.
 
@@ -539,7 +551,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                           ],
                         )
                       : Icon(
-                          Icons.shopping_cart,
+
+                          Icons.check,
                           color: Colors.green,
                           size: 40,
                         ),
@@ -551,10 +564,26 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           :  
           
           Center(
-                child: Text(
-              "Lista vazia",
-              textAlign: TextAlign.center,
-            )
+                
+                child:Row(
+                  
+                  mainAxisAlignment: MainAxisAlignment.center,                  
+                  children: <Widget>[
+                     Text(
+                        "Clique no botão ",
+                        textAlign: TextAlign.center,
+                        style:TextStyle(color:Colors.black87),
+                        
+                      ),
+                      Icon(Icons.add_shopping_cart, color:Colors.black87),
+                      Text(
+                        "para adicionar itens.",
+                        textAlign: TextAlign.center,
+                        style:TextStyle(color:Colors.black87),
+                      ),
+                  ],
+                )
+                
           )
 
          )
