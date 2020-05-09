@@ -18,9 +18,9 @@ void main() {
     //NomearRotas
     initialRoute: "/",
     routes: {
-       "/carrinho": (context) => CarrinhoCompra(),
-       "/historico":(context)=> ListaCompras()
-       },
+      "/carrinho": (context) => CarrinhoCompra(),
+      "/historico": (context) => ListaCompras()
+    },
   ));
 }
 
@@ -36,9 +36,8 @@ class _HomeState extends State<Home> {
   double limite;
   String prefix = "R\$";
   var _db = DatabaseHelper();
-  
 
-  void limiteGasto() {
+  /*void limiteGasto() {
 
     _salvarCompra();
      
@@ -54,28 +53,37 @@ class _HomeState extends State<Home> {
             builder: (context) => CarrinhoCompra(
                   valor: limite,
                 )));
-  }
+  }*/
 
   _salvarCompra() async {
+    setState(() {
+      limite = double.parse(valorController.text);
+    });
 
-    limite = double.parse(valorController.text);
     Compra compra = Compra(limite, DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
     print("Compra: ${resultado}");
 
-    /*Navigator.pushReplacement(context, 
-                  MaterialPageRoute(builder:
-                      (context) => ListaCompras()));*/
+    valorController.clear();
+
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => ListaCompras()));
   }
-
-
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            icon: Icon(
+              Icons.history,
+              color: Colors.white,
+            ),
+            onPressed: (){
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ListaCompras()));
+            }),
         backgroundColor: Colors.purple,
         title: Text(
           "shopping_cart",
@@ -97,17 +105,16 @@ class _HomeState extends State<Home> {
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(top: 60),
-
-                     child: Image.asset("images/logo.png",
-                       width: 142,
-                       height: 142,
-                     ),                  
-                    /*child: Icon(
+                  child: Image.asset(
+                    "images/logo.png",
+                    width: 142,
+                    height: 142,
+                  ),
+                  /*child: Icon(
                     Icons.shopping_cart,
                     size: 100.0,
                     color: Colors.purple,
                   ),*/
-
                 ),
                 Center(
                   child: Text(
@@ -154,8 +161,8 @@ class _HomeState extends State<Home> {
                       color: Colors.lightGreen,
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
-                          limiteGasto();
-                          //_salvarCompra();
+                          //limiteGasto();
+                          _salvarCompra();
                         }
                       },
                       shape: new RoundedRectangleBorder(
@@ -168,7 +175,7 @@ class _HomeState extends State<Home> {
                       ),
                       label: Text(""),
                     )),
-              ],
+                ],
             )),
       ),
       bottomNavigationBar: BottomAppBar(
