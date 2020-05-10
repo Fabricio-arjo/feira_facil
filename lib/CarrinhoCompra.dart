@@ -158,7 +158,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             ],
           );
        });
+
+      
   }
+
 
   _recuperarItens(int id_compra) async {
           
@@ -220,6 +223,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     _nomeController.clear();
     _precoController.clear();
     _qtdeController.clear();
+    _localController.clear();
+
 
     _recuperarItens(id_compra);
   }
@@ -413,6 +418,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                 key: Key(item.id.toString()),
 
                  background: Container(
+
                       color: Colors.green,
                       padding: EdgeInsets.all(16),
                       child: Row(
@@ -440,7 +446,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                       ),
                     ),
 
-                 onDismissed: (direction) {
+               
+                 confirmDismiss: (direction) {
 
                       if (direction == DismissDirection.endToStart) {   
 
@@ -472,10 +479,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                          } else if (direction == DismissDirection.startToEnd) {
                           
                              _exibirTelaCadastro(item: item);
-                                        
-                      }
-
-                    
+                       }                    
                     },
               
               child: GestureDetector(

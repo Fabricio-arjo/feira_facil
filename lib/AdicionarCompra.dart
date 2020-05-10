@@ -56,8 +56,8 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
     valorController.clear();
 
-    /*Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ListaCompras()));*/
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => ListaCompras()));
 
         
   }

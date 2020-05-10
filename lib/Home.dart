@@ -22,6 +22,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       );
   }
 
+ @override
+  void dispose() {
+    super.dispose();
+    _tabController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
