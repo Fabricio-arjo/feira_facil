@@ -351,17 +351,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       appBar: AppBar(
         backgroundColor: Colors.purple,
         
-        leading: IconButton(
+       /*leading: IconButton(
             icon: Icon(
               Icons.history,
               color: Colors.white,
             ),
             onPressed: () async {
                   //await _db.atualizaStatus();
-                  Navigator.pushReplacement(context, 
+                  Navigator.push(context, 
                                   MaterialPageRoute(builder:
                                       (context) => ListaCompras()));
-                      }),
+                      }),*/
         title: Text(
           "Items",
           style: TextStyle(
@@ -372,8 +372,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
         centerTitle: true,
 
-                          
-      
       ),
       body: Column(
         children: <Widget>[
@@ -410,7 +408,77 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                 item.selected = false;
               }
                 
-              return GestureDetector(
+              return Dismissible(
+
+                key: Key(item.id.toString()),
+
+                 background: Container(
+                      color: Colors.green,
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+
+                    secondaryBackground: Container(
+                      color: Colors.red,
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Icon(
+                            Icons.delete,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+
+                 onDismissed: (direction) {
+
+                      if (direction == DismissDirection.endToStart) {   
+
+                        showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text("Excluir"),
+                                        content: Text("Confirmar exclusão ?"),
+                                        actions: <Widget>[
+                                          FlatButton(
+                                            onPressed: () {
+                                              _removerItem(item.id, item.total,
+                                                  item.selected);
+                                              Navigator.pop(context);
+                                            },
+                                            child: Icon(Icons.check),
+                                          ),
+                                          FlatButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: Icon(Icons.close))
+                                        ],
+                                      );
+                                    }
+                            );
+                                      
+                         } else if (direction == DismissDirection.startToEnd) {
+                          
+                             _exibirTelaCadastro(item: item);
+                                        
+                      }
+
+                    
+                    },
+              
+              child: GestureDetector(
 
                 onTap: (){
 
@@ -439,7 +507,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                 child:Card(
                 
 
-                color: Colors.grey[50],
+                color: Colors.grey[100],
                 elevation: 3.0,
                 key: Key(item.toString()),
                 child: ListTile(
@@ -477,16 +545,27 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
                   //Exibir ações dentro do item de lista.
 
-                  trailing: item.status != 1
-                      ? Row(
+                  trailing: item.status != 1 ?
+
+                   Icon(
+
+                          Icons.add_shopping_cart,
+                          //color: Colors.grey,
+                          size: 30,
+                        ) 
+                      
+                      /*Row(
+
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
 
-                            GestureDetector(
+
+                           GestureDetector(
 
                               onTap: () {
                                 _exibirTelaCadastro(item: item);
                               },
+
                               child: Padding(
                                 padding: EdgeInsets.only(right: 20),
                                 child: Icon(
@@ -497,7 +576,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                             ),
 
                             GestureDetector(
+
                               onTap: () {
+
                                 showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -531,18 +612,26 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                               ),
                             )
                           ],
-                        )
+                        )*/
+
+
                       : Icon(
 
                           Icons.shopping_cart,
                           color: Colors.green,
-                          size: 40,
+                          size: 30,
                         ),
+
                 ),
 
 
+              ),
 
               ),
+
+              
+
+
 
               );
             

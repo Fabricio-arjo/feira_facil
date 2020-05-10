@@ -54,11 +54,13 @@ class _ListaComprasState extends State<ListaCompras> {
     _recuperaCompras();
 
     return Scaffold(
-      appBar: AppBar(
+      
+      /*appBar: AppBar(
         title: Text("Purchases"),
         backgroundColor: Colors.purple,
         centerTitle: true,
-      ),
+      ),*/
+
       body: Column(
         children: <Widget>[
           Expanded(
@@ -68,7 +70,9 @@ class _ListaComprasState extends State<ListaCompras> {
                   final compra = _itens[index];
 
                   return Dismissible(
+
                     background: Container(
+                      
                       color: Colors.green,
                       padding: EdgeInsets.all(16),
                       child: Row(
@@ -81,6 +85,7 @@ class _ListaComprasState extends State<ListaCompras> {
                         ],
                       ),
                     ),
+
                     secondaryBackground: Container(
                       color: Colors.red,
                       padding: EdgeInsets.all(16),
@@ -94,9 +99,11 @@ class _ListaComprasState extends State<ListaCompras> {
                         ],
                       ),
                     ),
+                   
                     //direction: DismissDirection.horizontal,
                     onDismissed: (direction) {
                       if (direction == DismissDirection.endToStart) {
+
                         print("direcao: endToStart ");
                       } else if (direction == DismissDirection.startToEnd) {
                         print("direcao: startToEnd ");
@@ -122,10 +129,15 @@ class _ListaComprasState extends State<ListaCompras> {
                                 "Valor: " + compra.valorLimite.toStringAsFixed(2)),
                             subtitle:
                                 Text(" Data: " + _formatarData(compra.dataCompra)),
-                            trailing: Icon(Icons.add_shopping_cart),
+                            trailing: Icon(
+                              
+                                       Icons.shopping_basket,
+                                       size: 30,
+                            
+                            ),
                             
                             onTap: (){  
-                                Navigator.pushReplacement(
+                                Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => CarrinhoCompra(
@@ -135,7 +147,8 @@ class _ListaComprasState extends State<ListaCompras> {
                       ),
                     )
                   )
-                );
+
+                 );
                 }
               ),
           )
