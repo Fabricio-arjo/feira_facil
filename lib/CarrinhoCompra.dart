@@ -39,6 +39,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
  
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
+    
     String textoSalvarAtualizar = "";
     if (item == null) {
       //Salvando
@@ -157,7 +158,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   child: Icon(Icons.close)),
             ],
           );
-       });
+       }
+    );
 
       
   }
@@ -275,28 +277,26 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   }
 
   //Atualiza o saldo após a adição de itens no carrinho
-  _disponivel(double compra, bool operacao) {
+  _disponivel(double totalItem, bool operacao) {
 
-    if ((compra != null) && (operacao == true)) {
+    if ((totalItem != null) && (operacao == true)) {
 
       setState(() {
-        valor -= compra;
+        valor -= totalItem;
       });
       
      _db.atualizaValorCompra(valor,id_compra);
 
-      print(
-          "Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
-    } else if ((compra != null) && (operacao == false)) {
+      //print("Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
+    } else if ((totalItem != null) && (operacao == false)) {
 
       setState(() {
-        valor += compra;
+        valor += totalItem;
       });
      
      _db.atualizaValorCompra(valor,id_compra);
 
-      print(
-          "Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
+      //print("Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
     } else {
       valor = valor;
     }
@@ -396,7 +396,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
          Expanded(
                                     
             child: _itens.length != 0 ?
-             ListView.builder(
+           
+            ListView.builder(
          
             itemCount: _itens.length,
             itemBuilder: (context, index) {
@@ -460,8 +461,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                         actions: <Widget>[
                                           FlatButton(
                                             onPressed: () {
-                                              _removerItem(item.id, item.total,
-                                                  item.selected);
+                                              _removerItem(item.id, item.total,item.selected);
                                               Navigator.pop(context);
                                             },
                                             child: Icon(Icons.check),
@@ -633,10 +633,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
               ),
 
-              
-
-
-
               );
             
             },
@@ -664,9 +660,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                       ),
                   ],
                 )
-                
-          )
-
+           )
          )
         ],
       ),
@@ -678,27 +672,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             _exibirTelaCadastro();
           }),
 
-    /*bottomNavigationBar: BottomAppBar(
-        //color: Colors.purple,
-        elevation: 20.0,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(100,0,100,5),
-             child:RaisedButton(
-                      child: Text("Finalizar",
-                      style: TextStyle(color:Colors.white,
-                      fontWeight: FontWeight.bold),
-                      ),
-                      color: Colors.red,
-                      onPressed: () {print("Finalizar !");},
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                     
-                    )
-        )
-            
-      ),*/
-     
+         
     );
   }
 }

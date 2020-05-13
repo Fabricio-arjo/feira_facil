@@ -77,13 +77,16 @@ class DatabaseHelper {
 
    }
 
-   atualizaValorCompra(double novoValor, int idCompra) async{
-
+       atualizaValorCompra(double novoValor, int idCompra) async{
        var bancoDados = await db;
-    
        await bancoDados.rawUpdate('UPDATE $nomeTabela1 SET valorLimite = ? WHERE idCompra = ?',[novoValor, idCompra]);
    
    }
+
+    Future<int> removerCompra(int id) async {
+    var bancoDados = await db;
+    return await bancoDados.delete(nomeTabela1, where: "idCompra =?", whereArgs: [id]);
+  }
 
 
 

@@ -56,8 +56,8 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
     valorController.clear();
 
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ListaCompras()));
+    /*Navigator.push(
+        context, MaterialPageRoute(builder: (context) => ListaCompras()));*/
 
         
   }
@@ -67,31 +67,12 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   @override
   Widget build(BuildContext context) {
 
-  PageController pageController = PageController();
+  
     
      
   return Scaffold(
     
-      /*appBar: AppBar(
-        leading: IconButton(
-            icon: Icon(
-              Icons.history,
-              color: Colors.white,
-            ),
-            onPressed: (){
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ListaCompras()));
-            }),
-        backgroundColor: Colors.purple,
-        title: Text(
-          "shopping_cart",
-          style: TextStyle(
-            fontStyle: FontStyle.normal,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),*/
+      
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         reverse: true,
@@ -108,15 +89,11 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     width: 142,
                     height: 142,
                   ),
-                  /*child: Icon(
-                    Icons.shopping_cart,
-                    size: 100.0,
-                    color: Colors.purple,
-                  ),*/
+                  
                 ),
                 Center(
                   child: Text(
-                    "Control you cash",
+                    "Acompanhe seu gasto",
                     style: TextStyle(
                         color: Colors.purple,
                         fontWeight: FontWeight.bold,
