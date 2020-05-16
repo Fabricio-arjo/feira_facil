@@ -6,7 +6,7 @@ class Item{
   int id;
   String nome;
   double preco;
-  int qtde;
+  double qtde;
   double total;
   String local;
   String data;

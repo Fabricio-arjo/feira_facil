@@ -11,7 +11,6 @@ import 'package:intl/date_symbol_data_local.dart';
 //import 'package:feira_facil/helper/CompraHelper.dart';
 import 'ListaCompras.dart';
 
-
 class AdicionarCompra extends StatefulWidget {
   @override
   _AdicionarCompraState createState() => _AdicionarCompraState();
@@ -25,6 +24,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   double limite;
   String prefix = "R\$";
   var _db = DatabaseHelper();
+ 
 
   /*void limiteGasto() {
 
@@ -45,34 +45,39 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   }*/
 
   _salvarCompra() async {
+    
     setState(() {
-      limite = double.parse(valorController.text);
+      limite = double.parse(valorController.text.replaceAll(',','.'));
     });
 
     Compra compra = Compra(limite, DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
     print("Compra: ${resultado}");
-
     valorController.clear();
 
-    /*Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ListaCompras()));*/
 
-        
-  }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CarrinhoCompra(
+                  id_compra: resultado,
+                  valor: limite,
+                )));
+
+
+     /* var id = await _db.idCompra();
+        int cd = id[0]['compra'];  */
+
+   }
 
 
 
+  
   @override
   Widget build(BuildContext context) {
 
-  
-    
-     
-  return Scaffold(
-    
-      
+   return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         reverse: true,
@@ -89,11 +94,10 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     width: 142,
                     height: 142,
                   ),
-                  
                 ),
                 Center(
                   child: Text(
-                    "Acompanhe seu gasto",
+                    "Defina um valor",
                     style: TextStyle(
                         color: Colors.purple,
                         fontWeight: FontWeight.bold,
@@ -120,7 +124,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.normal,
                         ),
-                        hintText: "Ex: 100.00",
+                        //hintText: "Ex: 100.00",
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20)),
                         prefixText: prefix,
@@ -138,7 +142,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                         if (_formKey.currentState.validate()) {
                           //limiteGasto();
                           _salvarCompra();
-                         
+                                                                            
                         }
                       },
                       shape: new RoundedRectangleBorder(
@@ -151,11 +155,10 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                       ),
                       label: Text(""),
                     )),
-                ],
+              ],
             )),
       ),
       bottomNavigationBar: BottomAppBar(
-
         //color: Colors.purple,
         elevation: 20.0,
         child: IconButton(
@@ -187,11 +190,8 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                       ],
                     );
                   });
-            }
-          ),
+            }),
       ),
     );
-
-
   }
 }

@@ -10,7 +10,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
- TabController _tabController;
+   
+   TabController _tabController;
 
  @override
   void initState() {
@@ -53,7 +54,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   indicatorColor: Colors.white,
                   tabs: <Widget>[
                           Tab(text: "Nova"), 
-                          Tab(text: "Últimas")
+                          Tab(text: "Recentes")
                   ],
                 
                 )

@@ -14,85 +14,95 @@ class DatabaseHelper {
     return _databaseHelper;
   }
 
-  DatabaseHelper._iternal(){}
+  DatabaseHelper._iternal() {}
 
-  get db async{
-      if (_db != null) {
-          return _db;         
-       } else {
-          _db = await inicializarBD();
-          return _db;
-       }
+  get db async {
+    if (_db != null) {
+      return _db;
+    } else {
+      _db = await inicializarBD();
+      return _db;
+    }
   }
 
-   _onCreate(Database db, int version) async {
+  _onCreate(Database db, int version) async {
+    String sql1 = "CREATE TABLE $nomeTabela1 ("
+        "idCompra INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "valorLimite DOUBLE,"
+        "dataCompra DATETIME)";
 
-      String sql1 = "CREATE TABLE $nomeTabela1 ("
-      "idCompra INTEGER PRIMARY KEY AUTOINCREMENT,"
-      "valorLimite DOUBLE,"
-      "dataCompra DATETIME)";
-       
-       await db.execute(sql1);
-       
-       String sql2 = "CREATE TABLE $nomeTabela2 ("
+    await db.execute(sql1);
+
+    String sql2 = "CREATE TABLE $nomeTabela2 ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
         "nome VARCHAR,"
         "preco DOUBLE,"
-        "qtde INT,"
+        "qtde double,"
         "total DOUBLE,"
         "local,"
         "data DATETIME,"
         "status INTEGER,"
         "compra_id INTEGER)";
 
-        await db.execute(sql2);
-     }
-     
-
+    await db.execute(sql2);
+  }
 
   inicializarBD() async {
     final caminhoBancoDados = await getDatabasesPath();
     final localBancoDados = join(caminhoBancoDados, "banco_compras.db");
 
-    var db = await openDatabase(localBancoDados, version: 1, onCreate: _onCreate);
+    var db =
+        await openDatabase(localBancoDados, version: 1, onCreate: _onCreate);
     return db;
   }
 
   // ------------------------- Compra ---------------------------------------------
 
-   Future <int> salvarCompra(Compra compra) async {
-       var bancoDados = await db;
-
-       int resultado = await bancoDados.insert(nomeTabela1, compra.toMap());
-       return resultado;   
-   }
-
-
-      recuperaCompra() async {
-      
-      var bancoDados = await db;
-      String sql = "SELECT * FROM $nomeTabela1 ORDER BY dataCompra DESC";
-      List compra = await bancoDados.rawQuery(sql);
-      return compra;
-
-   }
-
-       atualizaValorCompra(double novoValor, int idCompra) async{
-       var bancoDados = await db;
-       await bancoDados.rawUpdate('UPDATE $nomeTabela1 SET valorLimite = ? WHERE idCompra = ?',[novoValor, idCompra]);
-   
-   }
-
-    Future<int> removerCompra(int id) async {
+  Future<int> salvarCompra(Compra compra) async {
     var bancoDados = await db;
-    return await bancoDados.delete(nomeTabela1, where: "idCompra =?", whereArgs: [id]);
+
+    int resultado = await bancoDados.insert(nomeTabela1, compra.toMap());
+    return resultado;
   }
 
+  recuperaCompra() async {
+    var bancoDados = await db;
+    String sql = "SELECT * FROM $nomeTabela1 ORDER BY dataCompra DESC";
+    List compra = await bancoDados.rawQuery(sql);
+    return compra;
+  }
+
+  atualizaValorCompra(double novoValor, int idCompra) async {
+    var bancoDados = await db;
+    await bancoDados.rawUpdate(
+        'UPDATE $nomeTabela1 SET valorLimite = ? WHERE idCompra = ?',
+        [novoValor, idCompra]);
+  }
+
+  Future<int> removerCompra(int id) async {
+    var bancoDados = await db;
+    return await bancoDados
+        .delete(nomeTabela1, where: "idCompra =?", whereArgs: [id]);
+  }
+
+ 
+
+  idCompra() async {
+
+    var bancoDados = await db;
+    String sql = "SELECT last_insert_rowid()$nomeTabela1";
+    var res = await bancoDados.rawQuery(sql);
+
+    return res;
+    
+  }  
+
+  
 
 
-   //-------------------------------Itens ------------------------------------
+  //-------------------------------Itens ------------------------------------
 
-   Future<int> salvarItem(Item item) async {
+  Future<int> salvarItem(Item item) async {
     var bancoDados = await db;
 
     //Map da classe item.toMap(). Pois será usado várias vezes
@@ -101,40 +111,35 @@ class DatabaseHelper {
   }
 
   recuperarItens(int id) async {
-    
     var bancoDados = await db;
 
     //String sql = "SELECT * FROM $nomeTabela2 ORDER BY data DESC";
     //List itens = await bancoDados.rawQuery(sql);
 
-    List itens = await bancoDados.rawQuery('SELECT * FROM $nomeTabela1 c INNER JOIN $nomeTabela2 i ON c.idCompra = i.compra_id WHERE idCompra = ?', [id]);
-    
+    List itens = await bancoDados.rawQuery(
+        'SELECT * FROM $nomeTabela1 c INNER JOIN $nomeTabela2 i ON c.idCompra = i.compra_id WHERE idCompra = ?',
+        [id]);
+
     return itens;
-
   }
-
-
 
   Future<int> atualizarItem(Item item) async {
     var bancoDados = await db;
-    return await bancoDados.update(nomeTabela2, item.toMap(), where: "id = ?", whereArgs: [item.id]);
+    return await bancoDados.update(nomeTabela2, item.toMap(),
+        where: "id = ?", whereArgs: [item.id]);
   }
 
 //Recebe um int, quantidade de itens removidos
   Future<int> removerItem(int id) async {
     var bancoDados = await db;
-    return await bancoDados.delete(nomeTabela2, where: "id =?", whereArgs: [id]);
+    return await bancoDados
+        .delete(nomeTabela2, where: "id =?", whereArgs: [id]);
   }
 
-
-   atualizaStatus() async {
+  atualizaStatus() async {
     var bancoDados = await db;
-    
+
     String sql = "UPDATE $nomeTabela2 SET status='0'";
     await bancoDados.rawQuery(sql);
-    
   }
-
-
-
 }

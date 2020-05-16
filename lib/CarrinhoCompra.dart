@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
-
 import 'model/Compra.dart';
 
 class CarrinhoCompra extends StatefulWidget {
@@ -15,14 +14,17 @@ class CarrinhoCompra extends StatefulWidget {
   final int id_compra;
 
   @override
-  _CarrinhoCompraState createState() => _CarrinhoCompraState(this.valor, this.id_compra);
+  _CarrinhoCompraState createState() =>
+      _CarrinhoCompraState(this.valor, this.id_compra);
 }
 
 class _CarrinhoCompraState extends State<CarrinhoCompra> {
-  _CarrinhoCompraState(this.valor,this.id_compra);
- 
+     _CarrinhoCompraState(this.valor, this.id_compra);
+
   double valor;
   int id_compra;
+  int add = 0;
+
 
   TextEditingController _nomeController = TextEditingController();
   TextEditingController _precoController = TextEditingController();
@@ -36,10 +38,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   //Lista para recuperar itens
   List<Item> _itens = List<Item>();
 
- 
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
-    
+
     String textoSalvarAtualizar = "";
     if (item == null) {
       //Salvando
@@ -47,7 +48,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       _nomeController.text = "";
       _precoController.text = "";
       _qtdeController.text = "";
-      _localController.text="";
+      _localController.text = "";
 
       textoSalvarAtualizar = "Adicionar";
     } else {
@@ -55,7 +56,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
       _nomeController.text = item.nome;
       _precoController.text = item.preco.toString();
-      _qtdeController.text = item.qtde.toString();
+      _qtdeController.text = item.qtde.toStringAsFixed(3);
       _localController.text = item.local.toString();
 
       textoSalvarAtualizar = "Atualizar";
@@ -65,20 +66,32 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text(textoSalvarAtualizar +" Item",
-              style: TextStyle(color:Colors.purple,
-             )
-            ),
-            content: Column(
+
+           title: Text(textoSalvarAtualizar + " Item",
+                style: TextStyle(
+                  color: Colors.purple,
+                )),
+            
+            content: Container(
+
+            height:240,
+            width: 300,
+            alignment: Alignment.topCenter,
+            
+            child: Column(
+              
               mainAxisSize: MainAxisSize.min,
-                          
+
+            
               children: <Widget>[
-                         
+
                 Container(
-                  padding: EdgeInsets.all(5),
-                  height: 55,
+
+                  padding: EdgeInsets.all(0),
+                                    
                   child: TextField(
                     controller: _nomeController,
+                    maxLength: 30,
                     autofocus: true,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
@@ -87,52 +100,49 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   ),
                 ),
 
-               //Divider(),
+                //Divider(),
 
-               Row(
-                   
-                   children: <Widget>[
-
-                     Container(
-                          padding: EdgeInsets.all(5),
-                          width: 120,
-                          height: 55,
-                          child: TextField(
-                            controller: _precoController,
-                            //autofocus: true,
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: "Preço",
-                                hintText: "Ex: 8.50"),
-                          ),
+                Row(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.all(4),
+                      width: 110,
+                      
+                      child: TextField(
+                        controller: _precoController,
+                        //autofocus: true,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Preço",
+                            hintText: "Ex: 8.50"),
                       ),
+                    ),
 
-                            //Divider(),
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        width: 110,
-                        height: 55,
-                        child: TextField(
-                          controller: _qtdeController,
-                          keyboardType: TextInputType.number,
-                          //autofocus: true,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: "Qtde",
-                              hintText: "Ex: 1"),
-                        ),
-                      ),
+                    //Divider(),
+                    Container(
+                      padding: EdgeInsets.all(4),
+                      width: 120,
                      
-                   ],
+                      child: TextField(
+                        controller: _qtdeController,
+                        keyboardType: TextInputType.number,
+                        //autofocus: true,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Qtde",
+                            hintText: "Ex: 1"),
+                      ),
+                    ),
+                  ],
+                ),
 
-               ),
-
-               Container(
-                  padding: EdgeInsets.all(5),
-                  height: 55,
+                Container(
+                  padding: EdgeInsets.fromLTRB(5,5,5,0),
+                 
                   child: TextField(
                     controller: _localController,
+                    maxLength: 20,
                     keyboardType: TextInputType.text,
                     //autofocus: true,
                     decoration: InputDecoration(
@@ -141,11 +151,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                         hintText: "Ex: Estabelecimento"),
                   ),
                 )
-                          
               ],
-                
             ),
 
+          ),
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
@@ -158,16 +167,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   child: Icon(Icons.close)),
             ],
           );
-       }
-    );
-
-      
+        });
   }
 
+  
 
   _recuperarItens(int id_compra) async {
-          
-   
+
+      
     List itensRecuperados = await _db.recuperarItens(id_compra);
 
     //Guardar dentro do for na lista temporaria
@@ -184,30 +191,29 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     listaTemporaria = null;
 
-    print("Lista itens: " + itensRecuperados.toString());
-    print("Compra ID: " +id_compra.toString());
-    
+    print("Lista itens: " + _itens.toString());
+    print("Compra ID: " + id_compra.toString());
   }
 
-  _salvarAtualizarItem({Item itemSelecionado}) async {
 
+
+
+  _salvarAtualizarItem({Item itemSelecionado}) async {
     String nome = _nomeController.text;
-    double preco = double.parse(_precoController.text);
-    int qtde = int.parse(_qtdeController.text);
+    double preco = double.parse(_precoController.text.replaceAll(',','.'));
+    double qtde = double.parse(_qtdeController.text.replaceAll(',','.'));
     double total = preco * qtde;
     String local = _localController.text;
     int status;
-    int compra_id = id_compra; 
+    int compra_id = id_compra;
 
     if (itemSelecionado == null) {
       //Salvando
 
       //Objeto da classe item
-      Item item = Item(nome, preco, qtde, total,local,DateTime.now().toString(), status, compra_id);
+      Item item = Item(nome, preco, qtde, total, local,
+          DateTime.now().toString(), status, compra_id);
       int resultado = await _db.salvarItem(item);
-
-        
-
     } else {
       //Atualizar
 
@@ -227,13 +233,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     _qtdeController.clear();
     _localController.clear();
 
-
     _recuperarItens(id_compra);
   }
-  
 
+  //Atualiza a coluna Status
   _atualizaStatus(Item itemEscolhido, bool selecionado) async {
-
     if (selecionado == true && itemEscolhido.status != 1) {
       itemEscolhido.status = 1;
 
@@ -247,9 +251,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     int resultado = await _db.atualizarItem(itemEscolhido);
   }
 
-  
   _formatarData(String data) {
-
     initializeDateFormatting("pt_BR");
 
     //Year -> y month-> M Day -> d
@@ -262,8 +264,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     return dataFormatada;
   }
-
-  
 
   _removerItem(int id, double compra, bool operacao) async {
     if (operacao == true) {
@@ -278,23 +278,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   //Atualiza o saldo após a adição de itens no carrinho
   _disponivel(double totalItem, bool operacao) {
-
     if ((totalItem != null) && (operacao == true)) {
-
       setState(() {
         valor -= totalItem;
       });
-      
-     _db.atualizaValorCompra(valor,id_compra);
+
+      _db.atualizaValorCompra(valor, id_compra);
 
       //print("Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
     } else if ((totalItem != null) && (operacao == false)) {
-
       setState(() {
         valor += totalItem;
       });
-     
-     _db.atualizaValorCompra(valor,id_compra);
+
+      _db.atualizaValorCompra(valor, id_compra);
 
       //print("Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
     } else {
@@ -331,42 +328,71 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         });
   }
 
-  
   _checkLenght() async {
+    List itens = await _db.recuperarItens(id_compra);
 
-   List itens = await _db.recuperarItens(id_compra);
-
-   //print("Length ${itens.length}");
-       return itens.length;    
+    //print("Length ${itens.length}");
+    return itens.length;
   }
 
+  _snackBar() {
+    final snackbar = SnackBar(
+      //backgroundColor: Colors.green,
+      duration: Duration(seconds: 3),
+      content: Text(
+        "Item removido",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
+
+    Scaffold.of(context).showSnackBar(snackbar);
+    return snackbar;
+  }
+
+  _finalizarCompra(int codCompra, int adicionado) {
+
+
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            // title: Text("Finalizar compra"),
+            content: Text("Deseja finalizar a compra ?"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.check),
+              ),
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Icon(Icons.close))
+            ],
+          );
+        });
  
- @override
+  }
+
+  @override
   void initState() {
     super.initState();
 
     _recuperarItens(id_compra);
   }
 
-
   @override
   Widget build(BuildContext context) {
-    
+
+
+     
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
-        
-       /*leading: IconButton(
-            icon: Icon(
-              Icons.history,
-              color: Colors.white,
-            ),
-            onPressed: () async {
-                  //await _db.atualizaStatus();
-                  Navigator.push(context, 
-                                  MaterialPageRoute(builder:
-                                      (context) => ListaCompras()));
-                      }),*/
         title: Text(
           "Items",
           style: TextStyle(
@@ -374,15 +400,22 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
         centerTitle: true,
-
+        /*actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.add_shopping_cart),
+              onPressed: () {
+                _exibirTelaCadastro();
+              })
+        ],*/
       ),
       body: Column(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: Text(
+              
+           
               "R\$ ${valor.toStringAsFixed(2)}",
               style: TextStyle(
                   color: Colors.blue,
@@ -391,277 +424,165 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          //Text("${widget.valor}",
+        
 
-         Expanded(
-                                    
-            child: _itens.length != 0 ?
-           
-            ListView.builder(
-         
-            itemCount: _itens.length,
-            itemBuilder: (context, index) {
+          Expanded(
+              child: _itens.length != 0
+                  ? ListView.builder(
+                      itemCount: _itens.length,
+                      itemBuilder: (context, index) {
+                        //Recuperar item dentro do método recuperarItens
+                        final item = _itens[index];
 
-   
-              //Recuperar item dentro do método recuperarItens
-              final item = _itens[index];
+                        //item.selected !=item.selected;
 
-              //item.selected !=item.selected;
+                        if (item.status == 1) {
+                          item.selected = true;
+                        } else if (item.status == 0) {
+                          item.selected = false;
 
-              if (item.status == 1) {
-                item.selected = true;
-              } else if (item.status == 0) {
-                item.selected = false;
-              }
-                
-              return Dismissible(
-
-                key: Key(item.id.toString()),
-
-                 background: Container(
-
-                      color: Colors.green,
-                      padding: EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                    ),
-
-                    secondaryBackground: Container(
-                      color: Colors.red,
-                      padding: EdgeInsets.all(16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                    ),
-
-               
-                 confirmDismiss: (direction) {
-
-                      if (direction == DismissDirection.endToStart) {   
-
-                        showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text("Excluir"),
-                                        content: Text("Confirmar exclusão ?"),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            onPressed: () {
-                                              _removerItem(item.id, item.total,item.selected);
-                                              Navigator.pop(context);
-                                            },
-                                            child: Icon(Icons.check),
-                                          ),
-                                          FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Icon(Icons.close))
-                                        ],
-                                      );
-                                    }
-                            );
-                                      
-                         } else if (direction == DismissDirection.startToEnd) {
                           
-                             _exibirTelaCadastro(item: item);
-                       }                    
-                    },
-              
-              child: GestureDetector(
-
-                onTap: (){
-
-                                  
-                  setState(() {
-
-                          if (item.selected == false) {
-                             item.selected=true;                            
-                          } else {
-                              item.selected=false; 
-                          }                         
-                    
-                          _atualizaStatus(item, item.selected);
-                        });
-
-                        if (valor < item.total) {
-                          item.status = 0;
-                          _disponivel(0, item.selected);
-                          _controleSaldo(item.total);
-                        } else {
-                          _disponivel(item.total, item.selected);
                         }
 
-                },
-
-                child:Card(
-                
-
-                color: Colors.grey[100],
-                elevation: 3.0,
-                key: Key(item.toString()),
-                child: ListTile(
-
-                  /*leading: Checkbox(
-
-                      activeColor: Colors.green,
-                      value: item.selected,
-                      onChanged: (bool novoValor) {
-                        
-                        setState(() {
-                          item.selected = novoValor;
-                          _atualizaStatus(item, item.selected);
-                        });
-
-                        if (valor < item.total) {
-                          item.status = 0;
-                          _disponivel(0, item.selected);
-                          _controleSaldo(item.total);
-                        } else {
-                          _disponivel(item.total, item.selected);
-                        }
-                      }
-                      
-                    ),*/
-
-                 
-
-                  title: item.status == 1
-                      ? Text(
-                          item.nome + " - Total: " + item.total.toStringAsFixed(2),
-                          style: TextStyle(color: Colors.green),
-                        )
-                      : Text(item.nome + " - Total: " + item.total.toStringAsFixed(2)),
-
-                  //Exibir ações dentro do item de lista.
-
-                  trailing: item.status != 1 ?
-
-                   Icon(
-
-                          Icons.add_shopping_cart,
-                          //color: Colors.grey,
-                          size: 30,
-                        ) 
-                      
-                      /*Row(
-
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-
-
-                           GestureDetector(
-
-                              onTap: () {
-                                _exibirTelaCadastro(item: item);
-                              },
-
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 20),
-                                child: Icon(
+                        return Dismissible(
+                          key: Key(item.id.toString()),
+                          background: Container(
+                            color: Colors.green,
+                            padding: EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
                                   Icons.edit,
-                                  color: Colors.green,
-                                ),
+                                  color: Colors.white,
+                                )
+                              ],
+                            ),
+                          ),
+                          secondaryBackground: Container(
+                            color: Colors.red,
+                            padding: EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                )
+                              ],
+                            ),
+                          ),
+                          confirmDismiss: (direction) {
+                            if (direction == DismissDirection.endToStart) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Excluir"),
+                                      content: Text("Confirmar exclusão ?"),
+                                      actions: <Widget>[
+                                        FlatButton(
+                                          onPressed: () {
+                                            _removerItem(item.id, item.total,
+                                                item.selected);
+                                            Navigator.pop(context);
+                                            _snackBar();
+                                          },
+                                          child: Icon(Icons.check),
+                                        ),
+                                        FlatButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: Icon(Icons.close))
+                                      ],
+                                    );
+                                  });
+                            } else if (direction ==
+                                DismissDirection.startToEnd) {
+                              _exibirTelaCadastro(item: item);
+                            }
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (item.selected == false) {
+                                  item.selected = true;
+                                  add += 1;
+                                } else {
+                                  item.selected = false;
+                                  add -= 1;
+                                }
+                                _atualizaStatus(item, item.selected);
+                              });
+
+                              if (valor < item.total) {
+                                item.status = 0;
+                                _disponivel(0, item.selected);
+                                _controleSaldo(item.total);
+                              } else {
+                                _disponivel(item.total, item.selected);
+                              }
+
+                              print("Adicionados: ${add}");
+
+                              if (add == _itens.length) {
+                                _finalizarCompra(item.compra_id, add);
+                              }
+
+                            },
+                            child: Card(
+                              color: Colors.grey[100],
+                              elevation: 3.0,
+                              key: Key(item.toString()),
+                              child: ListTile(
+                                title: item.status == 1
+                                    ? Text(
+                                        item.nome +
+                                            " - Total: " +
+                                            item.total.toStringAsFixed(2),
+                                        style: TextStyle(color: Colors.green),
+                                      )
+                                    : Text(item.nome +
+                                        " - Total: " +
+                                        item.total.toStringAsFixed(2)),
+
+                                //Exibir ações dentro do item de lista.
+
+                                trailing: item.status != 1
+                                    ? Icon(
+                                        Icons.remove_shopping_cart,
+                                        //color: Colors.grey,
+                                        size: 30,
+                                      )
+                                    : Icon(
+                                        Icons.shopping_cart,
+                                        color: Colors.green,
+                                        size: 30,
+                                      ),
                               ),
                             ),
-
-                            GestureDetector(
-
-                              onTap: () {
-
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text("Excluir"),
-                                        content: Text("Confirmar exclusão ?"),
-                                        actions: <Widget>[
-                                          FlatButton(
-                                            onPressed: () {
-                                              _removerItem(item.id, item.total,
-                                                  item.selected);
-                                              Navigator.pop(context);
-                                            },
-                                            child: Icon(Icons.check),
-                                          ),
-                                          FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Icon(Icons.close))
-                                        ],
-                                      );
-                                    });
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 0),
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            )
-                          ],
-                        )*/
-
-
-                      : Icon(
-
-                          Icons.shopping_cart,
-                          color: Colors.green,
-                          size: 30,
+                          ),
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Clique no botão ",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black87),
                         ),
-
-                ),
-
-
-              ),
-
-              ),
-
-              );
-            
-            },
-          )
-
-          :  
-          
-          Center(
-                
-                child:Row(
-                  
-                  mainAxisAlignment: MainAxisAlignment.center,                  
-                  children: <Widget>[
-                     Text(
-                        "Clique no botão ",
-                        textAlign: TextAlign.center,
-                        style:TextStyle(color:Colors.black87),
-                        
-                      ),
-                      Icon(Icons.add_shopping_cart, color:Colors.black87),
-                      Text(
-                        "para adicionar itens.",
-                        textAlign: TextAlign.center,
-                        style:TextStyle(color:Colors.black87),
-                      ),
-                  ],
-                )
-           )
-         )
+                        Icon(Icons.add_shopping_cart, color: Colors.black87),
+                        Text(
+                          "para adicionar itens.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.black87),
+                        ),
+                      ],
+                    )))
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -671,10 +592,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           onPressed: () {
             _exibirTelaCadastro();
           }),
-
-         
     );
   }
 }
-
-
