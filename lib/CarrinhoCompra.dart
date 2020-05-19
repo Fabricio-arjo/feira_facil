@@ -7,6 +7,8 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
 import 'model/Compra.dart';
+import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:flutter_masked_text/flutter_masked_text.Dart';
 
 class CarrinhoCompra extends StatefulWidget {
   CarrinhoCompra({this.valor, this.id_compra});
@@ -24,19 +26,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   double valor;
   int id_compra;
   int add = 0;
-
-
-  TextEditingController _nomeController = TextEditingController();
-  TextEditingController _precoController = TextEditingController();
-  TextEditingController _qtdeController = TextEditingController();
-  TextEditingController _localController = TextEditingController();
-
   var _db = DatabaseHelper();
-
   double _saldo;
-
-  //Lista para recuperar itens
+ 
   List<Item> _itens = List<Item>();
+  
+  
+
+  TextEditingController _nomeController = TextEditingController(text: "");
+  MoneyMaskedTextController _precoController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '.');
+  TextEditingController _qtdeController = TextEditingController();
+  TextEditingController _localController = TextEditingController(text: "");
+
+  String currentText = "";
+  List<String> suggestions = [];
 
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
@@ -56,7 +59,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
       _nomeController.text = item.nome;
       _precoController.text = item.preco.toString();
-      _qtdeController.text = item.qtde.toStringAsFixed(3);
+      _qtdeController.text = item.qtde.toString();
       _localController.text = item.local.toString();
 
       textoSalvarAtualizar = "Atualizar";
@@ -74,39 +77,45 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             
             content: Container(
 
-            height:240,
-            width: 300,
+            height:200,
+            width: 330,
             alignment: Alignment.topCenter,
             
             child: Column(
               
               mainAxisSize: MainAxisSize.min,
 
-            
-              children: <Widget>[
+             children: <Widget>[
 
                 Container(
 
-                  padding: EdgeInsets.all(0),
-                                    
-                  child: TextField(
+                  padding: EdgeInsets.only(bottom: 5),
+                                               
+                  child: SimpleAutoCompleteTextField(
+                    key: null,
                     controller: _nomeController,
-                    maxLength: 30,
-                    autofocus: true,
+                    suggestions:suggestions,
+                    keyboardType: TextInputType.text,
+                    textChanged: (text){
+                       setState(() {
+                              currentText = text;
+                         });
+                      },
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Nome",
-                        hintText: "Ex: Arroz"),
+                        //hintText: "Ex: Arroz"
+                        ),
                   ),
                 ),
 
-                //Divider(),
+             
 
                 Row(
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.all(4),
-                      width: 110,
+                      width: 120,
                       
                       child: TextField(
                         controller: _precoController,
@@ -115,14 +124,15 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: "Preço",
-                            hintText: "Ex: 8.50"),
+                            //hintText: "Ex: 8.50"
+                          ),
                       ),
                     ),
 
                     //Divider(),
                     Container(
-                      padding: EdgeInsets.all(4),
-                      width: 120,
+                      padding: EdgeInsets.all(5),
+                      width: 110,
                      
                       child: TextField(
                         controller: _qtdeController,
@@ -131,7 +141,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                         decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             labelText: "Qtde",
-                            hintText: "Ex: 1"),
+                            //hintText: "Ex: 1"
+                          ),
                       ),
                     ),
                   ],
@@ -140,7 +151,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                 Container(
                   padding: EdgeInsets.fromLTRB(5,5,5,0),
                  
-                  child: TextField(
+                  child: SimpleAutoCompleteTextField(
+                    key: null,
+                    controller: _localController,
+                    keyboardType: TextInputType.text,
+                    suggestions: suggestions,
+                    textChanged: (text) => currentText = text,
+                    decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Local",
+                        //hintText: "Ex: Estabelecimento"
+                      ),
+                  ),
+                  
+                  /*TextField(
                     controller: _localController,
                     maxLength: 20,
                     keyboardType: TextInputType.text,
@@ -148,8 +172,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Local",
-                        hintText: "Ex: Estabelecimento"),
-                  ),
+                        //hintText: "Ex: Estabelecimento"
+                      ),
+                  ),*/
+
                 )
               ],
             ),
@@ -159,6 +185,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
               FlatButton(
                   onPressed: () {
                     _salvarAtualizarItem(itemSelecionado: item);
+                   
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.check)),
@@ -174,7 +201,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _recuperarItens(int id_compra) async {
 
-      
     List itensRecuperados = await _db.recuperarItens(id_compra);
 
     //Guardar dentro do for na lista temporaria
@@ -182,8 +208,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     for (var itm in itensRecuperados) {
       Item item = Item.fromMap(itm);
-
       listaTemporaria.add(item);
+
+      if ((suggestions.contains(item.nome) == false)||(suggestions.contains(item.local) == false)) {
+         suggestions.add(item.nome);
+         suggestions.add(item.local);
+      }
+       
     }
     setState(() {
       _itens = listaTemporaria;
@@ -191,16 +222,15 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     listaTemporaria = null;
 
-    print("Lista itens: " + _itens.toString());
-    print("Compra ID: " + id_compra.toString());
+    print("Lista itens: " +itensRecuperados.toString());
+    
   }
 
 
-
-
   _salvarAtualizarItem({Item itemSelecionado}) async {
+
     String nome = _nomeController.text;
-    double preco = double.parse(_precoController.text.replaceAll(',','.'));
+    double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',','.'));
     double total = preco * qtde;
     String local = _localController.text;
@@ -211,9 +241,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       //Salvando
 
       //Objeto da classe item
-      Item item = Item(nome, preco, qtde, total, local,
-          DateTime.now().toString(), status, compra_id);
+      Item item = Item(nome, preco, qtde, total, local,DateTime.now().toString(), status, compra_id);
+     
       int resultado = await _db.salvarItem(item);
+                
+   
     } else {
       //Atualizar
 
@@ -226,6 +258,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
       //Método do Item Helper
       int resultado = await _db.atualizarItem(itemSelecionado);
+   
+
     }
 
     _nomeController.clear();
@@ -381,15 +415,16 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   @override
   void initState() {
     super.initState();
-
-    _recuperarItens(id_compra);
+      
   }
 
   @override
   Widget build(BuildContext context) {
 
+  _recuperarItens(id_compra);
 
-     
+  
+      
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,

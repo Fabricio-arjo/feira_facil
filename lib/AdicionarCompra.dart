@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 //import 'package:feira_facil/helper/CompraHelper.dart';
 import 'ListaCompras.dart';
+import 'package:flutter_masked_text/flutter_masked_text.Dart';
+
 
 class AdicionarCompra extends StatefulWidget {
   @override
@@ -20,7 +22,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController valorController = TextEditingController();
+  MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '.');
   double limite;
   String prefix = "R\$";
   var _db = DatabaseHelper();
@@ -53,7 +55,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
     Compra compra = Compra(limite, DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
-    print("Compra: ${resultado}");
+    //print("Compra: ${resultado}");
     valorController.clear();
 
 

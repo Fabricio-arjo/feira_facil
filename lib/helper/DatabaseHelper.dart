@@ -3,6 +3,7 @@ import 'package:feira_facil/model/Compra.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+
 class DatabaseHelper {
   static final String nomeTabela1 = "compra";
   static final String nomeTabela2 = "item";
@@ -142,4 +143,10 @@ class DatabaseHelper {
     String sql = "UPDATE $nomeTabela2 SET status='0'";
     await bancoDados.rawQuery(sql);
   }
+
+
 }
+
+
+
+
