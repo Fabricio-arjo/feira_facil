@@ -9,6 +9,11 @@ void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Home(),
+    theme:ThemeData(
+     
+    ) 
+      
+    ,
 
     //NomearRotas
     initialRoute: "/",

@@ -35,7 +35,7 @@ class _ListaComprasState extends State<ListaCompras> {
   }
 
   _exibirTelaEdicao(Compra compra) {
-    _valorController.text = compra.valorLimite.toString();
+    _valorController.text = compra.valorLimite.toStringAsFixed(2);
 
     showDialog(
         context: context,
@@ -110,7 +110,7 @@ class _ListaComprasState extends State<ListaCompras> {
 
     listaTemporaria = null;
 
-    //print("Lista itens: " + comprasRealizadas.toString());
+    print("Lista itens: " + comprasRealizadas.toString());
   }
 
   _removerCompra(int id) async {

@@ -54,7 +54,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   indicatorColor: Colors.white,
                   tabs: <Widget>[
                           Tab(text: "Nova"), 
-                          Tab(text: "Realizadas")
+                          Tab(text: "Realizadas"),
+                         
                   ],
                 
                 )

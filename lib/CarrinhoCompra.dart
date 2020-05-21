@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:feira_facil/model/Item.dart';
+import 'package:feira_facil/model/Sugestao.dart';
 import 'package:flutter/material.dart';
 //import 'package:feira_facil/helper/ItemHelper.dart';
 import 'package:intl/intl.dart';
@@ -28,8 +29,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   int add = 0;
   var _db = DatabaseHelper();
   double _saldo;
- 
   List<Item> _itens = List<Item>();
+  
   
   
 
@@ -43,7 +44,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
-
+     _sugestoes();
+      
     String textoSalvarAtualizar = "";
     if (item == null) {
       //Salvando
@@ -54,11 +56,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       _localController.text = "";
 
       textoSalvarAtualizar = "Adicionar";
+
     } else {
       //Atualizando
-
-      _nomeController.text = item.nome;
-      _precoController.text = item.preco.toString();
+       
+      _nomeController.text = item.nome.toString();
+      _precoController.text =  item.preco.toStringAsFixed(2);
       _qtdeController.text = item.qtde.toString();
       _localController.text = item.local.toString();
 
@@ -66,6 +69,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     }
 
     showDialog(
+
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -94,18 +98,16 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   child: SimpleAutoCompleteTextField(
                     key: null,
                     controller: _nomeController,
-                    suggestions:suggestions,
+                    suggestions: suggestions,
                     keyboardType: TextInputType.text,
-                    textChanged: (text){
-                       setState(() {
-                              currentText = text;
-                         });
-                      },
-                    decoration: InputDecoration(
+                    textChanged: (text) => currentText = text,
+                      
+                      decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Nome",
                         //hintText: "Ex: Arroz"
                         ),
+                                         
                   ),
                 ),
 
@@ -162,6 +164,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                         labelText: "Local",
                         //hintText: "Ex: Estabelecimento"
                       ),
+                      
                   ),
                   
                   /*TextField(
@@ -201,6 +204,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _recuperarItens(int id_compra) async {
 
+    
+
     List itensRecuperados = await _db.recuperarItens(id_compra);
 
     //Guardar dentro do for na lista temporaria
@@ -210,11 +215,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       Item item = Item.fromMap(itm);
       listaTemporaria.add(item);
 
-      if ((suggestions.contains(item.nome) == false)||(suggestions.contains(item.local) == false)) {
-         suggestions.add(item.nome);
-         suggestions.add(item.local);
-      }
-       
     }
     setState(() {
       _itens = listaTemporaria;
@@ -244,7 +244,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       Item item = Item(nome, preco, qtde, total, local,DateTime.now().toString(), status, compra_id);
      
       int resultado = await _db.salvarItem(item);
-                
+      int sugestao = await _db.salvarSugestao(item.nome, item.local);
+    
+    
    
     } else {
       //Atualizar
@@ -412,9 +414,29 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
  
   }
 
+  _sugestoes()async{
+
+     List dados = await _db.sugestoes();
+     for (var d in dados) {
+        Sugestao s = Sugestao.fromMap(d);
+      if ((suggestions.contains(s.nome) == false)||(suggestions.contains(s.local) == false)) {
+        setState(() {
+           suggestions.add(s.nome);
+           suggestions.add(s.local);            
+        });
+      }
+     }
+    
+     print("Dados: "+ suggestions.toString());
+
+  }
+  
+ 
   @override
   void initState() {
     super.initState();
+   
+  
       
   }
 
@@ -422,7 +444,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   Widget build(BuildContext context) {
 
   _recuperarItens(id_compra);
-
+  
   
       
     return Scaffold(
@@ -518,8 +540,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                       actions: <Widget>[
                                         FlatButton(
                                           onPressed: () {
-                                            _removerItem(item.id, item.total,
-                                                item.selected);
+                                            setState(() {
+                                              add-=1;
+                                            });
+                                            _removerItem(item.id, item.total,item.selected);
                                             Navigator.pop(context);
                                             _snackBar();
                                           },

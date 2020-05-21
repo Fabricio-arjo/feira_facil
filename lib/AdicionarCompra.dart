@@ -22,10 +22,12 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '.');
+  MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '');
   double limite;
-  String prefix = "R\$";
+  int finalizada = 0;
   var _db = DatabaseHelper();
+
+  String prefix = "R\$";
  
 
   /*void limiteGasto() {
@@ -52,7 +54,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
       limite = double.parse(valorController.text.replaceAll(',','.'));
     });
 
-    Compra compra = Compra(limite, DateTime.now().toString());
+    Compra compra = Compra(limite,finalizada, DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
     //print("Compra: ${resultado}");
