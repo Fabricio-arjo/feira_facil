@@ -110,7 +110,7 @@ class _ListaComprasState extends State<ListaCompras> {
 
     listaTemporaria = null;
 
-    print("Lista itens: " + comprasRealizadas.toString());
+    print("Lista compras: " + comprasRealizadas.toString());
   }
 
   _removerCompra(int id) async {
@@ -134,6 +134,7 @@ class _ListaComprasState extends State<ListaCompras> {
 
   @override
   Widget build(BuildContext context) {
+   
     _recuperaCompras();
 
     return Scaffold(

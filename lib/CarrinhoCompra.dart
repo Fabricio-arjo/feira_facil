@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'package:feira_facil/model/Item.dart';
 import 'package:feira_facil/model/Sugestao.dart';
 import 'package:flutter/material.dart';
-//import 'package:feira_facil/helper/ItemHelper.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'ListaCompras.dart';
@@ -11,29 +10,27 @@ import 'model/Compra.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_masked_text/flutter_masked_text.Dart';
 
+
 class CarrinhoCompra extends StatefulWidget {
   CarrinhoCompra({this.valor, this.id_compra});
+ 
   final double valor;
   final int id_compra;
+ 
 
   @override
-  _CarrinhoCompraState createState() =>
-      _CarrinhoCompraState(this.valor, this.id_compra);
+  _CarrinhoCompraState createState() =>_CarrinhoCompraState(this.valor, this.id_compra);
 }
 
 class _CarrinhoCompraState extends State<CarrinhoCompra> {
-     _CarrinhoCompraState(this.valor, this.id_compra);
+       _CarrinhoCompraState(this.valor, this.id_compra);
 
   double valor;
   int id_compra;
-  int add = 0;
   var _db = DatabaseHelper();
   double _saldo;
   List<Item> _itens = List<Item>();
   
-  
-  
-
   TextEditingController _nomeController = TextEditingController(text: "");
   MoneyMaskedTextController _precoController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '.');
   TextEditingController _qtdeController = TextEditingController();
@@ -41,10 +38,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   String currentText = "";
   List<String> suggestions = [];
+  int noCarrinho;
+ 
+
 
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
-     _sugestoes();
+    
       
     String textoSalvarAtualizar = "";
     if (item == null) {
@@ -204,8 +204,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _recuperarItens(int id_compra) async {
 
-    
-
     List itensRecuperados = await _db.recuperarItens(id_compra);
 
     //Guardar dentro do for na lista temporaria
@@ -214,7 +212,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     for (var itm in itensRecuperados) {
       Item item = Item.fromMap(itm);
       listaTemporaria.add(item);
-
+    
     }
     setState(() {
       _itens = listaTemporaria;
@@ -222,7 +220,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     listaTemporaria = null;
 
-    print("Lista itens: " +itensRecuperados.toString());
+   //print("Lista itens: " +itensRecuperados.toString());
     
   }
 
@@ -235,16 +233,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     double total = preco * qtde;
     String local = _localController.text;
     int status;
+    int carrinho=0;
     int compra_id = id_compra;
 
     if (itemSelecionado == null) {
       //Salvando
 
       //Objeto da classe item
-      Item item = Item(nome, preco, qtde, total, local,DateTime.now().toString(), status, compra_id);
+      Item item = Item(nome, preco, qtde, total, local,DateTime.now().toString(), status,carrinho, compra_id);
      
       int resultado = await _db.salvarItem(item);
-      int sugestao = await _db.salvarSugestao(item.nome, item.local);
+      int sugestao = await  _db.salvarSugestao(item.nome, item.local,item.compra_id);
     
     
    
@@ -276,15 +275,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   _atualizaStatus(Item itemEscolhido, bool selecionado) async {
     if (selecionado == true && itemEscolhido.status != 1) {
       itemEscolhido.status = 1;
-
-      print(itemEscolhido.nome + " -> " + itemEscolhido.status.toString());
-    } else if (selecionado == false) {
+      
+       } else if (selecionado == false) {
       itemEscolhido.status = 0;
-
-      print(itemEscolhido.nome + " -> " + itemEscolhido.status.toString());
+      
     }
 
     int resultado = await _db.atualizarItem(itemEscolhido);
+    
   }
 
   _formatarData(String data) {
@@ -364,13 +362,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         });
   }
 
-  _checkLenght() async {
-    List itens = await _db.recuperarItens(id_compra);
-
-    //print("Length ${itens.length}");
-    return itens.length;
-  }
-
+ 
   _snackBar() {
     final snackbar = SnackBar(
       //backgroundColor: Colors.green,
@@ -386,9 +378,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     return snackbar;
   }
 
-  _finalizarCompra(int codCompra, int adicionado) {
-
-
+  _finalizarCompraAlert(int codCompra) {
 
     showDialog(
         context: context,
@@ -399,6 +389,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
+                  _finalizaCompra(codCompra);
                   Navigator.pop(context);
                 },
                 child: Icon(Icons.check),
@@ -414,6 +405,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
  
   }
 
+
   _sugestoes()async{
 
      List dados = await _db.sugestoes();
@@ -422,32 +414,75 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       if ((suggestions.contains(s.nome) == false)||(suggestions.contains(s.local) == false)) {
         setState(() {
            suggestions.add(s.nome);
-           suggestions.add(s.local);            
+           suggestions.add(s.local);  
         });
       }
      }
-    
-     print("Dados: "+ suggestions.toString());
+     //print("Dados: "+ suggestions.toString());
+  }
 
+  /*_adicionaCarrinho(int valor, int idItem)async{
+      print("Adicionando: ${valor}");
+      await _db.adicionaCarrinho(valor, idItem);
+  }*/
+
+ /* _itemCarrinho(int cdCompra) async {
+      var valor = (await _db.itensCarrinho(id_compra))[0]['adicionados'];
+      //print("Count: ${valor}");
+      setState(()=>noCarrinho = valor);
+      print(">>>>: ${noCarrinho}");
+      
+      return noCarrinho;
+  }*/
+
+  _insereCarrinho(int id_compra, int id_item) async {
+    int  resultado = await _db.inserirCarrinho(id_compra, id_item);
+    print(" Insert " + resultado.toString());
+    
+    _itensCarrinho();
+  }
+
+  _removeCarrinho(int id_item) async {
+    int resultado = await _db.removerCarrinho(id_item);
+    print(" Delete " + resultado.toString());
+    
+    _itensCarrinho();
+  }
+   
+   _itensCarrinho() async {
+     var valor = (await _db.itensCarrinho())[0]['total'];
+    
+     setState(()=>noCarrinho = valor);
+     print("Count: ${noCarrinho}");
+
+     if (noCarrinho == _itens.length) {
+        
+        _finalizarCompraAlert(id_compra);
+     }
+  }
+
+  
+  _finalizaCompra(int id_compra) async {
+     if(id_compra != null){
+        return await _db.finalizaCompra(id_compra);
+      }      
+      print("Compra ${id_compra} finalizada"); 
   }
   
  
   @override
   void initState() {
-    super.initState();
-   
-  
-      
-  }
+        super.initState();
+   }
 
   @override
   Widget build(BuildContext context) {
 
   _recuperarItens(id_compra);
-  
-  
+  _sugestoes(); 
       
-    return Scaffold(
+ 
+  return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
         title: Text(
@@ -458,13 +493,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           ),
         ),
         centerTitle: true,
-        /*actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.add_shopping_cart),
-              onPressed: () {
-                _exibirTelaCadastro();
-              })
-        ],*/
+        
       ),
       body: Column(
         children: <Widget>[
@@ -485,6 +514,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
           Expanded(
               child: _itens.length != 0
+                
                   ? ListView.builder(
                       itemCount: _itens.length,
                       itemBuilder: (context, index) {
@@ -497,7 +527,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                           item.selected = true;
                         } else if (item.status == 0) {
                           item.selected = false;
-
                           
                         }
 
@@ -540,9 +569,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                       actions: <Widget>[
                                         FlatButton(
                                           onPressed: () {
-                                            setState(() {
-                                              add-=1;
-                                            });
+                                            
                                             _removerItem(item.id, item.total,item.selected);
                                             Navigator.pop(context);
                                             _snackBar();
@@ -564,13 +591,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                           },
                           child: GestureDetector(
                             onTap: () {
+
                               setState(() {
                                 if (item.selected == false) {
-                                  item.selected = true;
-                                  add += 1;
+                                    item.selected = true;
                                 } else {
-                                  item.selected = false;
-                                  add -= 1;
+                                   item.selected = false;
                                 }
                                 _atualizaStatus(item, item.selected);
                               });
@@ -583,13 +609,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                 _disponivel(item.total, item.selected);
                               }
 
-                              print("Adicionados: ${add}");
-
-                              if (add == _itens.length) {
-                                _finalizarCompra(item.compra_id, add);
+                              if (item.status==1) {
+                                  _insereCarrinho(item.compra_id, item.id);
+                                } else if(item.status == 0){
+                                  _removeCarrinho(item.id);
                               }
 
-                            },
+                              if(noCarrinho > 1){
+                                 
+                              }                                                              
+                                                                                            
+                           },
+
+                              
+
                             child: Card(
                               color: Colors.grey[100],
                               elevation: 3.0,
@@ -597,14 +630,15 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                               child: ListTile(
                                 title: item.status == 1
                                     ? Text(
-                                        item.nome +
+                                        item.nome /*+
                                             " - Total: " +
-                                            item.total.toStringAsFixed(2),
+                                            item.total.toStringAsFixed(2)*/,
                                         style: TextStyle(color: Colors.green),
+                                        textAlign: TextAlign.justify,
                                       )
-                                    : Text(item.nome +
+                                    : Text(item.nome /*+
                                         " - Total: " +
-                                        item.total.toStringAsFixed(2)),
+                                        item.total.toStringAsFixed(2)*/),
 
                                 //Exibir ações dentro do item de lista.
 
@@ -615,7 +649,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                         size: 30,
                                       )
                                     : Icon(
-                                        Icons.shopping_cart,
+                                        Icons.add_shopping_cart,
                                         color: Colors.green,
                                         size: 30,
                                       ),
@@ -647,7 +681,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.purple,
           foregroundColor: Colors.white,
-          child: Icon(Icons.add_shopping_cart),
+          child: Icon(Icons.add),
           onPressed: () {
             _exibirTelaCadastro();
           }),

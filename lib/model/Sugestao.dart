@@ -6,6 +6,7 @@ class Sugestao{
   int id;
   String nome;
   String local;
+  int id_compra;
   
       
     //Objeto item
@@ -17,7 +18,8 @@ class Sugestao{
   
       this.id = map["id"];
       this.nome = map["nome"];
-      this.local = map["local"];
+      this.local = map["local"]; 
+      this.id_compra = map["id_compra"];
       
           
   
@@ -29,6 +31,7 @@ class Sugestao{
         Map<String, dynamic> map = {
         "nome":this.nome,
         "preco":this.local,
+        "id_compra":this.id_compra,
                 
      };
   
