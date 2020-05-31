@@ -16,7 +16,7 @@ class _ListaComprasState extends State<ListaCompras> {
   List<Compra> _itens = List<Compra>();
 
   TextEditingController _valorController = TextEditingController();
-  double novoValor;
+  double novoValor,saldoCompra;
 
   var _db = DatabaseHelper();
 
@@ -87,10 +87,11 @@ class _ListaComprasState extends State<ListaCompras> {
       if (item.status == 1) {
         setState(() {
           novoValor -= item.total;
+          saldoCompra += item.total;
         });
       }
     }
-    await _db.atualizaValorCompra(novoValor, id);
+    await _db.atualizaValorCompra(novoValor, saldoCompra , id);
   }
 
   _recuperaCompras() async {
@@ -110,7 +111,7 @@ class _ListaComprasState extends State<ListaCompras> {
 
     listaTemporaria = null;
 
-    print("Lista compras: " + comprasRealizadas.toString());
+    //print("Lista compras: " + comprasRealizadas.toString());
   }
 
   _removerCompra(int id) async {

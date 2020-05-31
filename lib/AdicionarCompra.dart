@@ -23,7 +23,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '');
-  double limite;
+  double limite, saldo=0;
   int finalizada = 0;
   var _db = DatabaseHelper();
 
@@ -54,7 +54,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
       limite = double.parse(valorController.text.replaceAll(',','.'));
     });
 
-    Compra compra = Compra(limite,finalizada, DateTime.now().toString());
+    Compra compra = Compra(limite,saldo,finalizada,DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
     //print("Compra: ${resultado}");
@@ -65,8 +65,8 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
         context,
         MaterialPageRoute(
             builder: (context) => CarrinhoCompra(
-                  id_compra: resultado,
-                  valor: limite,
+                  id_compra: resultado/*,
+                  valor: limite,*/
                 )));
 
 

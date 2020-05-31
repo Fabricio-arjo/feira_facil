@@ -16,7 +16,7 @@ class CarrinhoCompra extends StatefulWidget {
  
   final double valor;
   final int id_compra;
- 
+  
 
   @override
   _CarrinhoCompraState createState() =>_CarrinhoCompraState(this.valor, this.id_compra);
@@ -39,6 +39,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   String currentText = "";
   List<String> suggestions = [];
   int noCarrinho;
+  int finalizada;
+  String situacao = "";
+  double limite, somaItem=0, saldoCompra;
+  
  
 
 
@@ -81,10 +85,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
             
             content: Container(
 
-            height:200,
-            width: 330,
-            alignment: Alignment.topCenter,
-            
+                
             child: Column(
               
               mainAxisSize: MainAxisSize.min,
@@ -110,8 +111,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                          
                   ),
                 ),
-
-             
 
                 Row(
                   children: <Widget>[
@@ -312,25 +311,30 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   //Atualiza o saldo após a adição de itens no carrinho
   _disponivel(double totalItem, bool operacao) {
+
     if ((totalItem != null) && (operacao == true)) {
       setState(() {
         valor -= totalItem;
+        somaItem +=totalItem;
       });
 
-      _db.atualizaValorCompra(valor, id_compra);
+      _db.atualizaValorCompra(valor,somaItem,id_compra);
 
       //print("Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
     } else if ((totalItem != null) && (operacao == false)) {
       setState(() {
         valor += totalItem;
+        somaItem -=totalItem;
+        
       });
 
-      _db.atualizaValorCompra(valor, id_compra);
+      _db.atualizaValorCompra(valor, somaItem, id_compra);
 
       //print("Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
     } else {
       valor = valor;
     }
+
   }
 
   _controleSaldo(double totalItem) {
@@ -378,18 +382,29 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     return snackbar;
   }
 
-  _finalizarCompraAlert(int codCompra) {
+  _finalizarReabrirCompraAlert(int codCompra, int status) {
+
+    if(status == 1 ){
+        setState(()=> situacao = "reabrir");
+    }else if(status==0){
+        setState(()=> situacao = "finalizar");
+    }
 
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
             // title: Text("Finalizar compra"),
-            content: Text("Deseja finalizar a compra ?"),
+            content: Text("Deseja ${situacao} a compra ?"),
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
-                  _finalizaCompra(codCompra);
+                
+                  if(status == 1 ){
+                       _reabreCompra(codCompra);
+                  }else if(status==0){
+                       _finalizaCompra(codCompra);
+                  }
                   Navigator.pop(context);
                 },
                 child: Icon(Icons.check),
@@ -411,55 +426,45 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
      List dados = await _db.sugestoes();
      for (var d in dados) {
         Sugestao s = Sugestao.fromMap(d);
-      if ((suggestions.contains(s.nome) == false)||(suggestions.contains(s.local) == false)) {
+      if ((suggestions.contains(s.nome) == false)) {
         setState(() {
            suggestions.add(s.nome);
-           suggestions.add(s.local);  
+        });
+      }else if((suggestions.contains(s.local) == false)){
+         setState(() {
+            suggestions.add(s.local);  
         });
       }
      }
      //print("Dados: "+ suggestions.toString());
   }
 
-  /*_adicionaCarrinho(int valor, int idItem)async{
-      print("Adicionando: ${valor}");
-      await _db.adicionaCarrinho(valor, idItem);
-  }*/
 
- /* _itemCarrinho(int cdCompra) async {
-      var valor = (await _db.itensCarrinho(id_compra))[0]['adicionados'];
-      //print("Count: ${valor}");
-      setState(()=>noCarrinho = valor);
-      print(">>>>: ${noCarrinho}");
-      
-      return noCarrinho;
-  }*/
 
-  _insereCarrinho(int id_compra, int id_item) async {
+ /* _insereCarrinho(int id_compra, int id_item) async {
     int  resultado = await _db.inserirCarrinho(id_compra, id_item);
     print(" Insert " + resultado.toString());
     
     _itensCarrinho();
-  }
+  }*/
 
-  _removeCarrinho(int id_item) async {
+ /* _removeCarrinho(int id_item) async {
     int resultado = await _db.removerCarrinho(id_item);
-    print(" Delete " + resultado.toString());
+    print(" Remove shopping cart " + resultado.toString());
     
-    _itensCarrinho();
-  }
+    //_itensCarrinho();
+  }*/
    
-   _itensCarrinho() async {
+  /*_itensCarrinho() async {
      var valor = (await _db.itensCarrinho())[0]['total'];
     
      setState(()=>noCarrinho = valor);
      print("Count: ${noCarrinho}");
 
-     if (noCarrinho == _itens.length) {
-        
+     /*if (noCarrinho == _itens.length) {
         _finalizarCompraAlert(id_compra);
-     }
-  }
+     }*/
+  }*/
 
   
   _finalizaCompra(int id_compra) async {
@@ -468,7 +473,33 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       }      
       print("Compra ${id_compra} finalizada"); 
   }
+
+   _reabreCompra(int id_compra) async {
+     if(id_compra != null){
+        return await _db.reabreCompra(id_compra);
+      }      
+      print("Compra ${id_compra} reaberta !"); 
+  }
   
+
+  _infoCompra(int id_compra) async{
+    
+    var dados = await _db.infoCompra(id_compra);
+
+    setState(() {
+      
+      limite = dados[0]['valorLimite'];
+      finalizada = dados[0]['finalizada'];
+      saldoCompra = dados[0]['saldo'];
+
+    });
+    
+      print(" Valor ${limite} - comprado ${saldoCompra} - finalizada ${finalizada}");
+
+  }
+
+
+
  
   @override
   void initState() {
@@ -480,6 +511,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _recuperarItens(id_compra);
   _sugestoes(); 
+  _infoCompra(id_compra);
       
  
   return Scaffold(
@@ -494,25 +526,59 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         ),
         centerTitle: true,
         
+        actions: finalizada != 1 ?
+        
+         <Widget>[
+           IconButton(
+             icon: Icon(
+               Icons.playlist_add, 
+               size: 30
+               ), 
+             onPressed:(){
+                 _exibirTelaCadastro();
+             }
+            )
+        ] :
+        
+         <Widget>[
+          
+        ]
+
       ),
       body: Column(
         children: <Widget>[
           Padding(
             padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              
-           
-              "R\$ ${valor.toStringAsFixed(2)}",
-              style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 35,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold),
-            ),
+            child: Row(
+               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                 children: <Widget>[
+                      Text(
+                       "R\$ ${limite.toString().replaceAll('.', ',')}",
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 35,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.bold),
+                         ),
+                         Text(
+                          "R\$ ${saldoCompra.toString().replaceAll('.', ',')}",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 25,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.bold),
+                            
+                            
+                         ),
+                 ],
+
+            )
+                       
           ),
         
 
           Expanded(
+
               child: _itens.length != 0
                 
                   ? ListView.builder(
@@ -589,8 +655,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                               _exibirTelaCadastro(item: item);
                             }
                           },
+                        
                           child: GestureDetector(
-                            onTap: () {
+                            
+                            onTap: finalizada!=1 ? () {
 
                               setState(() {
                                 if (item.selected == false) {
@@ -609,17 +677,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                 _disponivel(item.total, item.selected);
                               }
 
-                              if (item.status==1) {
+                              /*if (item.status==1) {
                                   _insereCarrinho(item.compra_id, item.id);
                                 } else if(item.status == 0){
                                   _removeCarrinho(item.id);
-                              }
-
-                              if(noCarrinho > 1){
-                                 
-                              }                                                              
+                              }*/
+                                                                                     
                                                                                             
-                           },
+                           } : null,
 
                               
 
@@ -655,36 +720,50 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                       ),
                               ),
                             ),
+
+
                           ),
+
                         );
                       },
                     )
                   : Center(
+
                       child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Clique no botão ",
+                          "Clique no botão  ",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black87),
                         ),
-                        Icon(Icons.add_shopping_cart, color: Colors.black87),
+                        Icon(Icons.playlist_add, size:30),
                         Text(
-                          "para adicionar itens.",
+                          "  para adicionar itens.",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black87),
                         ),
                       ],
-                    )))
+                    )
+                  )
+              )
         ],
       ),
+     
+    
+      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.purple,
-          foregroundColor: Colors.white,
-          child: Icon(Icons.add),
+                       
           onPressed: () {
-            _exibirTelaCadastro();
-          }),
+           _finalizarReabrirCompraAlert(id_compra, finalizada);
+          },
+                    
+
+          child: finalizada == 1 ? Icon(Icons.lock_open) : Icon(Icons.lock_outline),
+          backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
+
+        ),
+
     );
   }
 }

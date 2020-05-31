@@ -35,6 +35,7 @@ class DatabaseHelper {
     String sql1 = "CREATE TABLE $tabela1 ("
         "idCompra INTEGER PRIMARY KEY AUTOINCREMENT,"
         "valorLimite DOUBLE,"
+        "saldo DOUBLE,"
         "finalizada INTEGER,"
         "dataCompra DATETIME)";
 
@@ -98,9 +99,9 @@ class DatabaseHelper {
     return compra;
   }
 
-  atualizaValorCompra(double novoValor, int idCompra) async {
+  atualizaValorCompra(double novoValor, double somaItem, int idCompra) async {
     var bancoDados = await db;
-    await bancoDados.rawUpdate('UPDATE $tabela1 SET valorLimite = ? WHERE idCompra = ?', [novoValor, idCompra]);
+    await bancoDados.rawUpdate('UPDATE $tabela1 SET valorLimite = ?, saldo= ? WHERE idCompra = ?', [novoValor,somaItem, idCompra]);
   }
 
   Future<int> removerCompra(int id) async {
@@ -110,13 +111,11 @@ class DatabaseHelper {
   }
 
  
-  idCompra() async {
+   infoCompra(int idCompra) async {
 
     var bancoDados = await db;
-    String sql = "SELECT last_insert_rowid()$tabela1";
-    var res = await bancoDados.rawQuery(sql);
-    return res;
-    
+    return await bancoDados.rawQuery('SELECT valorLimite,saldo,finalizada FROM $tabela1 WHERE idCompra = ?', [idCompra]);
+      
   }  
 
    finalizaCompra(int compra_id) async {
@@ -124,6 +123,13 @@ class DatabaseHelper {
      await bancoDados.rawUpdate('UPDATE $tabela1 SET finalizada = ? WHERE idCompra = ?', [1, compra_id]);
       
   }
+
+  reabreCompra(int compra_id) async {
+    var bancoDados = await db;
+     await bancoDados.rawUpdate('UPDATE $tabela1 SET finalizada = ? WHERE idCompra = ?', [0, compra_id]);
+      
+  }
+
 
   
   //-------------------------------Itens ------------------------------------
@@ -168,18 +174,6 @@ class DatabaseHelper {
     await bancoDados.rawQuery(sql);
   }
 
-  /*adicionaCarrinho(int carrinho, int idItem) async {
-    var bancoDados = await db;
-    await bancoDados.rawQuery('UPDATE $tabela2 SET carrinho = $carrinho WHERE id = ?', [idItem]);
-  } */
-
-  /*Future itensCarrinho(int idCompra)async {
-
-    var bancoDados = await db;
-    var qtde =  await bancoDados.rawQuery('SELECT COUNT(carrinho) as adicionados FROM $tabela2 WHERE carrinho = 1 AND compra_id = ?', [idCompra]);
-    return qtde;
-    
-  }*/
 
     
 /*-------------------- Sugestão ----------------------------------------------- */
@@ -203,7 +197,7 @@ salvarSugestao(String nome, String local, int id_compra) async {
 
   /* ------------------------- Carrinho -------------------------------- */
 
-  inserirCarrinho(int id_compra, id_item) async {
+ /* inserirCarrinho(int id_compra, id_item) async {
    
     var bancoDados = await db;
     int resultado = await bancoDados.rawInsert(
@@ -222,9 +216,7 @@ salvarSugestao(String nome, String local, int id_compra) async {
     var bancoDados = await db;
     var qtde =  await bancoDados.rawQuery('SELECT COUNT(*) as total FROM $tabela4');
     return qtde;
-   }
-
-  
+   }*/  
 
 
 }
