@@ -1,7 +1,6 @@
 import 'package:feira_facil/model/Item.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-//import 'helper/CompraHelper.dart';
 import 'CarrinhoCompra.dart';
 import 'model/Compra.dart';
 import 'package:intl/intl.dart';
@@ -224,7 +223,7 @@ class _ListaComprasState extends State<ListaCompras> {
                                 subtitle: Text(" Data: " +
                                     _formatarData(compra.dataCompra)),
                                 trailing: Icon(
-                                  Icons.shopping_basket,
+                                  compra.finalizada != 1 ? Icons.shopping_basket : Icons.lock_outline,
                                   size: 30,
                                 ),
                                 onTap: () {

@@ -41,7 +41,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   int noCarrinho;
   int finalizada;
   String situacao = "";
-  double limite, somaItem=0, saldoCompra;
+  double valorCompra, saldoCompra;
   
  
 
@@ -309,30 +309,27 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     _recuperarItens(id_compra);
   }
 
-  //Atualiza o saldo após a adição de itens no carrinho
+  //Atualiza o saldo após a adição de itens ao carrinho
   _disponivel(double totalItem, bool operacao) {
 
     if ((totalItem != null) && (operacao == true)) {
       setState(() {
-        valor -= totalItem;
-        somaItem +=totalItem;
+        valorCompra -= totalItem;
+        saldoCompra +=totalItem;
       });
+      _db.atualizaValorCompra(valorCompra,saldoCompra,id_compra);
 
-      _db.atualizaValorCompra(valor,somaItem,id_compra);
-
-      //print("Subtração ->  Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
+      
     } else if ((totalItem != null) && (operacao == false)) {
       setState(() {
-        valor += totalItem;
-        somaItem -=totalItem;
-        
+        valorCompra += totalItem;
+        saldoCompra -= totalItem;
       });
-
-      _db.atualizaValorCompra(valor, somaItem, id_compra);
-
-      //print("Adição -> Disponível: ${valor} - Compra: ${compra.toStringAsFixed(2)}");
+      
+     _db.atualizaValorCompra(valorCompra,saldoCompra, id_compra);
+      
     } else {
-      valor = valor;
+      valorCompra = valorCompra;
     }
 
   }
@@ -488,13 +485,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     setState(() {
       
-      limite = dados[0]['valorLimite'];
+      valorCompra = dados[0]['valorLimite'];
       finalizada = dados[0]['finalizada'];
       saldoCompra = dados[0]['saldo'];
 
     });
     
-      print(" Valor ${limite} - comprado ${saldoCompra} - finalizada ${finalizada}");
+    // print(" Valor ${valorCompra} - saldo compra ${saldoCompra} - finalizada ${finalizada}");
 
   }
 
@@ -504,14 +501,16 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   @override
   void initState() {
         super.initState();
+       
    }
 
   @override
   Widget build(BuildContext context) {
 
+  _infoCompra(id_compra);
   _recuperarItens(id_compra);
   _sugestoes(); 
-  _infoCompra(id_compra);
+  
       
  
   return Scaffold(
@@ -553,15 +552,15 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                  children: <Widget>[
                       Text(
-                       "R\$ ${limite.toString().replaceAll('.', ',')}",
+                       "R\$ ${valorCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                         style: TextStyle(
-                            color: Colors.red,
+                            color: Colors.purple,
                             fontSize: 35,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold),
                          ),
                          Text(
-                          "R\$ ${saldoCompra.toString().replaceAll('.', ',')}",
+                          "R\$ ${saldoCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontSize: 25,
@@ -587,8 +586,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                         //Recuperar item dentro do método recuperarItens
                         final item = _itens[index];
 
-                        //item.selected !=item.selected;
-
+                   
                         if (item.status == 1) {
                           item.selected = true;
                         } else if (item.status == 0) {
@@ -658,37 +656,32 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                         
                           child: GestureDetector(
                             
-                            onTap: finalizada!=1 ? () {
+                            onTap:finalizada !=1 ? () {
 
                               setState(() {
                                 if (item.selected == false) {
-                                    item.selected = true;
+                                         item.selected = true;
                                 } else {
-                                   item.selected = false;
+                                       item.selected = false;
                                 }
                                 _atualizaStatus(item, item.selected);
-                              });
+                               });
 
-                              if (valor < item.total) {
-                                item.status = 0;
+
+                              if (valorCompra < item.total) {
+                                setState(() {
+                                  item.status = 0;
+                                });
                                 _disponivel(0, item.selected);
                                 _controleSaldo(item.total);
                               } else {
                                 _disponivel(item.total, item.selected);
                               }
+                                                                                                          
+                           }: (){},
 
-                              /*if (item.status==1) {
-                                  _insereCarrinho(item.compra_id, item.id);
-                                } else if(item.status == 0){
-                                  _removeCarrinho(item.id);
-                              }*/
-                                                                                     
-                                                                                            
-                           } : null,
 
-                              
-
-                            child: Card(
+                          child: Card(
                               color: Colors.grey[100],
                               elevation: 3.0,
                               key: Key(item.toString()),
@@ -701,7 +694,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                         style: TextStyle(color: Colors.green),
                                         textAlign: TextAlign.justify,
                                       )
-                                    : Text(item.nome /*+
+                                    : Text(item.nome/* +
                                         " - Total: " +
                                         item.total.toStringAsFixed(2)*/),
 
@@ -731,8 +724,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
                       child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
+                      children: finalizada !=1?
+                      
+                      <Widget>[
+                       Text(
                           "Clique no botão  ",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black87),
@@ -742,8 +737,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                           "  para adicionar itens.",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.black87),
-                        ),
-                      ],
+                        )
+                      ]:
+                       <Widget>[]
                     )
                   )
               )
@@ -751,14 +747,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       ),
      
     
-      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton(
                        
           onPressed: () {
            _finalizarReabrirCompraAlert(id_compra, finalizada);
           },
-                    
-
+          
           child: finalizada == 1 ? Icon(Icons.lock_open) : Icon(Icons.lock_outline),
           backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
 
