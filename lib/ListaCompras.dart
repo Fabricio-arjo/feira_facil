@@ -218,13 +218,23 @@ class _ListaComprasState extends State<ListaCompras> {
                               color: Colors.grey[100],
                               elevation: 3.0,
                               child: ListTile(
-                                title: Text("Valor: " +
-                                    compra.valorLimite.toStringAsFixed(2)),
+                                title: Text("Valor R\$: " +
+                                    compra.valorLimite.toStringAsFixed(2).replaceAll('.', ','),
+                                    style: TextStyle(
+                                       color: Colors.purple,
+                                       fontWeight: FontWeight.bold
+                                       )
+                                    ),
                                 subtitle: Text(" Data: " +
-                                    _formatarData(compra.dataCompra)),
-                                trailing: Icon(
+                                    _formatarData(compra.dataCompra),
+                                    style: TextStyle(
+                                       color: Colors.purple,
+                                       )
+                                    ),
+                                   trailing: Icon(
                                   compra.finalizada != 1 ? Icons.shopping_basket : Icons.lock_outline,
                                   size: 30,
+                                  color: Colors.purple,
                                 ),
                                 onTap: () {
                                   Navigator.push(

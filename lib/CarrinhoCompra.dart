@@ -298,26 +298,35 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     return dataFormatada;
   }
 
-  _removerItem(int id, double compra, bool operacao) async {
-    if (operacao == true) {
-      setState(() {
-        valor += compra;
-      });
-    }
-    await _db.removerItem(id);
 
-    _recuperarItens(id_compra);
+
+  _removerItem(int id, double compra, bool operacao) async {
+
+    double valor;
+
+     setState(() {
+        valor = compra;
+     });
+
+     await _db.removerItem(id);  
+       
+     //print("Compra: ${valor}");
+
+     _disponivel(valor, false);
+     
+    await  _recuperarItens(id_compra);
+
   }
 
   //Atualiza o saldo após a adição de itens ao carrinho
-  _disponivel(double totalItem, bool operacao) {
+  _disponivel(double totalItem, bool operacao) async {
 
     if ((totalItem != null) && (operacao == true)) {
       setState(() {
         valorCompra -= totalItem;
         saldoCompra +=totalItem;
       });
-      _db.atualizaValorCompra(valorCompra,saldoCompra,id_compra);
+      await _db.atualizaValorCompra(valorCompra,saldoCompra,id_compra);
 
       
     } else if ((totalItem != null) && (operacao == false)) {
@@ -326,7 +335,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         saldoCompra -= totalItem;
       });
       
-     _db.atualizaValorCompra(valorCompra,saldoCompra, id_compra);
+     await _db.atualizaValorCompra(valorCompra,saldoCompra, id_compra);
       
     } else {
       valorCompra = valorCompra;
@@ -367,7 +376,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   _snackBar() {
     final snackbar = SnackBar(
       //backgroundColor: Colors.green,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 2),
       content: Text(
         "Item removido",
         style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -491,7 +500,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     });
     
-    // print(" Valor ${valorCompra} - saldo compra ${saldoCompra} - finalizada ${finalizada}");
+     print(" Valor ${valorCompra} - saldo compra ${saldoCompra} - finalizada ${finalizada}");
 
   }
 
@@ -517,7 +526,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       appBar: AppBar(
         backgroundColor: Colors.purple,
         title: Text(
-          "Items",
+          "Itens",
           style: TextStyle(
             fontStyle: FontStyle.normal,
             fontWeight: FontWeight.bold,
@@ -552,7 +561,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                  children: <Widget>[
                       Text(
-                       "R\$ ${valorCompra.toStringAsFixed(2).replaceAll('.', ',')}",
+                       "R\$${valorCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                         style: TextStyle(
                             color: Colors.purple,
                             fontSize: 35,
@@ -560,7 +569,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                             fontWeight: FontWeight.bold),
                          ),
                          Text(
-                          "R\$ ${saldoCompra.toStringAsFixed(2).replaceAll('.', ',')}",
+                          "R\$${saldoCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontSize: 25,
@@ -682,44 +691,50 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
 
                           child: Card(
+                              
                               color: Colors.grey[100],
                               elevation: 3.0,
                               key: Key(item.toString()),
                               child: ListTile(
-                                title: item.status == 1
+                               
+                               title: item.status == 1
                                     ? Text(
                                         item.nome /*+
                                             " - Total: " +
                                             item.total.toStringAsFixed(2)*/,
-                                        style: TextStyle(color: Colors.green),
-                                        textAlign: TextAlign.justify,
+                                        style: TextStyle(color: Colors.green, fontWeight:FontWeight.bold,letterSpacing:5),
+                                        textAlign: TextAlign.center,
                                       )
                                     : Text(item.nome/* +
                                         " - Total: " +
-                                        item.total.toStringAsFixed(2)*/),
+                                        item.total.toStringAsFixed(2)*/,
+                                        style: TextStyle(color: Colors.purple, fontWeight:FontWeight.bold,letterSpacing:5),
+                                        textAlign: TextAlign.center,
+                                        ),
 
                                 //Exibir ações dentro do item de lista.
 
                                 trailing: item.status != 1
                                     ? Icon(
-                                        Icons.remove_shopping_cart,
-                                        //color: Colors.grey,
+                                        Icons.add_shopping_cart,
+                                        color: Colors.purple,
                                         size: 30,
                                       )
                                     : Icon(
-                                        Icons.add_shopping_cart,
+                                        Icons.shopping_cart,
                                         color: Colors.green,
                                         size: 30,
                                       ),
                               ),
                             ),
-
-
-                          ),
+                          
+                           ),
 
                         );
                       },
+                     
                     )
+
                   : Center(
 
                       child: Row(
@@ -730,13 +745,16 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                        Text(
                           "Clique no botão  ",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black87),
+                          style: TextStyle(color: Colors.purple),
                         ),
-                        Icon(Icons.playlist_add, size:30),
+                        Icon(
+                            Icons.playlist_add, 
+                            size:30,
+                            color: Colors.purple),
                         Text(
                           "  para adicionar itens.",
                           textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.black87),
+                          style: TextStyle(color: Colors.purple),
                         )
                       ]:
                        <Widget>[]
@@ -755,10 +773,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           },
           
           child: finalizada == 1 ? Icon(Icons.lock_open) : Icon(Icons.lock_outline),
-          backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
+          backgroundColor: finalizada == 1 ? Colors.purple : Colors.pink,
 
         ),
-
     );
   }
 }
