@@ -15,7 +15,7 @@ class _ListaComprasState extends State<ListaCompras> {
   List<Compra> _itens = List<Compra>();
 
   TextEditingController _valorController = TextEditingController();
-  double novoValor,saldoCompra;
+  double novoValor,saldoCompra = 0;
 
   var _db = DatabaseHelper();
 
@@ -65,8 +65,7 @@ class _ListaComprasState extends State<ListaCompras> {
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
-                    _atualizaValorCompra(
-                        double.parse(_valorController.text), compra.idDcompra);
+                    _atualizaValorCompra(double.parse(_valorController.text), compra.idDcompra);
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.check)),
@@ -79,7 +78,8 @@ class _ListaComprasState extends State<ListaCompras> {
   }
 
   _atualizaValorCompra(double novoValor, int id) async {
-    List itensCompra = await _db.recuperarItens(id);
+ 
+   List itensCompra = await _db.recuperarItens(id);
 
     for (var i in itensCompra) {
       Item item = Item.fromMap(i);
@@ -92,6 +92,8 @@ class _ListaComprasState extends State<ListaCompras> {
     }
     await _db.atualizaValorCompra(novoValor, saldoCompra , id);
   }
+
+
 
   _recuperaCompras() async {
     List comprasRealizadas = await _db.recuperaCompra();
