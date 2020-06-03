@@ -22,7 +22,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '');
+  TextEditingController valorController = TextEditingController();
   double limite, saldo=0;
   int finalizada = 0;
   var _db = DatabaseHelper();
@@ -66,17 +66,13 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
         MaterialPageRoute(
             builder: (context) => CarrinhoCompra(
                   id_compra: resultado,
-                  
-                  /*,
-                  valor: limite,*/
+                  /*valor: limite,*/
                 )));
-
      /* var id = await _db.idCompra();
         int cd = id[0]['compra'];  */
-
    }
 
-
+  String validarCampo = "";
 
   
   @override
@@ -118,9 +114,11 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     controller: valorController,
                     validator: (value) {
                       if (value.isEmpty) {
-                        return "Informe o limite a ser gasto.";
+                          
+                          return "Informe o limite a ser gasto.";
                       }
                     },
+
                     decoration: InputDecoration(
                         labelText: "Limite",
                         labelStyle: TextStyle(
@@ -146,6 +144,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           //limiteGasto();
+
                           _salvarCompra();
                                                                             
                         }

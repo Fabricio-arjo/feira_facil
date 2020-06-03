@@ -134,6 +134,21 @@ class _ListaComprasState extends State<ListaCompras> {
     return snackbar;
   }
 
+   _snackBar2() {
+    final snackbar = SnackBar(
+      //backgroundColor: Colors.green,
+      duration: Duration(seconds: 3),
+      content: Text(
+        "A compra ja foi finalizada",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
+
+    Scaffold.of(context).showSnackBar(snackbar);
+    return snackbar;
+  }
+
   @override
   Widget build(BuildContext context) {
    
@@ -209,9 +224,18 @@ class _ListaComprasState extends State<ListaCompras> {
                                         ],
                                       );
                                     });
-                              } else if (direction ==
-                                  DismissDirection.startToEnd) {
-                                _exibirTelaEdicao(compra);
+                              } else if (direction == DismissDirection.startToEnd) {
+                               
+                                 if(compra.finalizada == 1){
+                                     _snackBar2();
+                                 }else{
+
+                                     _exibirTelaEdicao(compra);
+                                    
+                                 }
+                                  
+                               
+
                               }
                             },
                             key: Key(compra.idDcompra.toString()),
