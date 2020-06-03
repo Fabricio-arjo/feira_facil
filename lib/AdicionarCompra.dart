@@ -26,10 +26,9 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   double limite, saldo=0;
   int finalizada = 0;
   var _db = DatabaseHelper();
-
   String prefix = "R\$";
- 
-
+  
+   
   /*void limiteGasto() {
 
     _salvarCompra();
@@ -60,15 +59,17 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
     //print("Compra: ${resultado}");
     valorController.clear();
 
+   
 
-    Navigator.push(
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) => CarrinhoCompra(
-                  id_compra: resultado/*,
+                  id_compra: resultado,
+                  
+                  /*,
                   valor: limite,*/
                 )));
-
 
      /* var id = await _db.idCompra();
         int cd = id[0]['compra'];  */

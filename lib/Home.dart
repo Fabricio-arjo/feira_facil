@@ -1,22 +1,28 @@
 import 'package:feira_facil/ListaCompras.dart';
 import 'package:flutter/material.dart';
-
 import 'AdicionarCompra.dart';
 
 class Home extends StatefulWidget {
+ Home({this.voltar});
+
+ final int voltar;
+
   @override
-  _HomeState createState() => _HomeState();
+  _HomeState createState() => _HomeState(this.voltar);
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+_HomeState(this.voltar);
 
-   
+   int voltar;
+
+   int _tabIndex = 0;
    TabController _tabController;
 
  @override
   void initState() {
      super.initState();
-
+     
       _tabController = TabController(
          length: 2, 
          vsync: this  //SingleTickerProviderStateMixin  colocar no HomeState
@@ -29,9 +35,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _tabController.dispose();
   }
 
+  void _toggleTab(int voltar) {
+    
+    if (voltar != null) {
+       _tabController.animateTo(voltar);
+    }else{
+       _tabController.animateTo(0);
+    }
+   
+
+    print("Indice: ${voltar}");
+
+  }
+
   @override
   Widget build(BuildContext context) {
    
+   _toggleTab(voltar);
 
     return Scaffold(
 
@@ -52,7 +72,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   controller: _tabController,
                   indicatorColor: Colors.white,
+                 
                   tabs: <Widget>[
+
                           Tab(text: "Nova"), 
                           Tab(text: "Realizadas"),
                          

@@ -4,6 +4,7 @@ import 'package:feira_facil/model/Sugestao.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'Home.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
 import 'model/Compra.dart';
@@ -16,6 +17,8 @@ class CarrinhoCompra extends StatefulWidget {
  
   final double valor;
   final int id_compra;
+
+  
   
 
   @override
@@ -42,6 +45,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   int finalizada;
   String situacao = "";
   double valorCompra, saldoCompra;
+  
+  int voltar, indice = 1;
   
  
 
@@ -524,6 +529,19 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
  
   return Scaffold(
       appBar: AppBar(
+        
+        leading:IconButton(
+                 icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25), 
+                 onPressed: (){
+                   Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Home(
+                         voltar: indice,
+                      )));
+                 }
+        ),
+       
         backgroundColor: Colors.purple,
         title: Text(
           "Itens",

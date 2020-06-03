@@ -239,7 +239,7 @@ class _ListaComprasState extends State<ListaCompras> {
                                   color: Colors.purple,
                                 ),
                                 onTap: () {
-                                  Navigator.push(
+                                  Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => CarrinhoCompra(
