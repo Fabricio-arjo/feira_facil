@@ -127,7 +127,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.normal,
                         ),
-                        //hintText: "Ex: 100.00",
+                        hintText: "0.00",
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20)),
                         prefixText: prefix,

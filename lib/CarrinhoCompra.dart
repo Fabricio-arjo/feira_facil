@@ -18,10 +18,7 @@ class CarrinhoCompra extends StatefulWidget {
   final double valor;
   final int id_compra;
 
-  
-  
-
-  @override
+    @override
   _CarrinhoCompraState createState() =>_CarrinhoCompraState(this.valor, this.id_compra);
 }
 
@@ -45,6 +42,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   int finalizada;
   String situacao = "";
   double valorCompra, saldoCompra;
+  double  compra, saldo;
   
   int voltar, indice = 1;
   
@@ -239,33 +237,44 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     int status;
     int carrinho=0;
     int compra_id = id_compra;
-
-    if (itemSelecionado == null) {
-      //Salvando
-
-      //Objeto da classe item
+     
+    
+    
+   if (itemSelecionado == null) {
+            
       Item item = Item(nome, preco, qtde, total, local,DateTime.now().toString(), status,carrinho, compra_id);
      
       int resultado = await _db.salvarItem(item);
       int sugestao = await  _db.salvarSugestao(item.nome, item.local,item.compra_id);
+       
     
-    
-   
     } else {
-      //Atualizar
-
+      
+            
       itemSelecionado.nome = nome;
       itemSelecionado.preco = preco;
       itemSelecionado.qtde = qtde;
-      itemSelecionado.total = total;
+      itemSelecionado.total =  itemSelecionado.preco * itemSelecionado.qtde;
       itemSelecionado.local = local;
       itemSelecionado.data = DateTime.now().toString();
 
-      //Método do Item Helper
-      int resultado = await _db.atualizarItem(itemSelecionado);
-   
+     int resultado = await _db.atualizarItem(itemSelecionado);
+     
+    
+     if( itemSelecionado.selected== true){
+     
+         setState(() {
+            compra -= itemSelecionado.total;
+            saldo += itemSelecionado.total;
+        });
 
+       await _db.atualizaValorCompra(compra,saldo,id_compra);
+    
+     }
+
+     
     }
+
 
     _nomeController.clear();
     _precoController.clear();
@@ -287,6 +296,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     int resultado = await _db.atualizarItem(itemEscolhido);
     
+   
   }
 
   _formatarData(String data) {
@@ -678,6 +688,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                             } else if (direction ==
                                 DismissDirection.startToEnd) {
                               _exibirTelaCadastro(item: item);
+
+                             if(item.selected == true){
+                                
+                                compra = valorCompra;
+                                saldo = saldoCompra;
+
+                               setState((){
+                                  compra += item.total;
+                                  saldo -= item.total;
+                                });
+
+                                print(compra.toString() +" ---- "+ saldo.toString());
+                             }   
+          
                             }
                           },
                         
