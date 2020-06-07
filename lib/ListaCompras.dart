@@ -205,8 +205,8 @@ class _ListaComprasState extends State<ListaCompras> {
                                     context: context,
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: Text("Excluir"),
-                                        content: Text("Confirmar exclusão ?"),
+                                        //title: Text("Excluir",style: TextStyle(color: Colors.purple)),
+                                        content: Text("Confirmar exclusão ?",style: TextStyle(color: Colors.purple,fontWeight: FontWeight.bold)),
                                         actions: <Widget>[
                                           FlatButton(
                                             onPressed: () {
@@ -229,14 +229,11 @@ class _ListaComprasState extends State<ListaCompras> {
                                  if(compra.finalizada == 1){
                                      _snackBar2();
                                  }else{
-
                                      _exibirTelaEdicao(compra);
                                     
                                  }
                                   
-                               
-
-                              }
+                                }
                             },
                             key: Key(compra.idDcompra.toString()),
                             child: GestureDetector(
@@ -257,11 +254,9 @@ class _ListaComprasState extends State<ListaCompras> {
                                        color: Colors.purple,
                                        )
                                     ),
-                                   trailing: Icon(
-                                  compra.finalizada != 1 ? Icons.shopping_basket : Icons.lock_outline,
-                                  size: 30,
-                                  color: Colors.purple,
-                                ),
+                                   trailing: compra.finalizada == 1 ? Icon(Icons.lock, size: 30, color: Colors.red[300])
+                                   : Icon(Icons.shopping_basket, size: 30, color: Colors.purple ),
+                                              
                                 onTap: () {
                                   Navigator.pushReplacement(
                                       context,

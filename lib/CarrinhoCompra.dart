@@ -4,6 +4,7 @@ import 'package:feira_facil/model/Sugestao.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'ConfirmaCompra.dart';
 import 'Home.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
@@ -87,8 +88,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                 )),
             
             content: Container(
-
-                
+            
+                           
             child: Column(
               
               mainAxisSize: MainAxisSize.min,
@@ -105,13 +106,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                     suggestions: suggestions,
                     keyboardType: TextInputType.text,
                     textChanged: (text) => currentText = text,
-                      
+                    
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Nome",
                         //hintText: "Ex: Arroz"
                         ),
-                                         
+                     
                   ),
                 ),
 
@@ -259,7 +260,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
       itemSelecionado.data = DateTime.now().toString();
 
      int resultado = await _db.atualizarItem(itemSelecionado);
-     
+     int sugestao = await  _db.salvarSugestao( itemSelecionado.nome, itemSelecionado.local,itemSelecionado.compra_id);
     
      if( itemSelecionado.selected== true){
      
@@ -329,6 +330,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
      _disponivel(valor, false);
      
+     _snackBar();
+
     await  _recuperarItens(id_compra);
 
   }
@@ -403,6 +406,33 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     return snackbar;
   }
 
+
+   _snackBar2() {
+   
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+           
+            content: Container(
+                    height: 35,
+                    child: Text("Reabra a compra para  \n continuar adicionando itens.",
+                     style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+            ),          
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                   Navigator.of(context).pop();
+                },
+                child: Icon(Icons.check, color: Colors.purple)
+             ),
+              
+            ],
+          );
+        });
+  }
+
+
   _finalizarReabrirCompraAlert(int codCompra, int status) {
 
     if(status == 1 ){
@@ -415,8 +445,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            // title: Text("Finalizar compra"),
-            content: Text("Deseja ${situacao} a compra ?"),
+           //title: Text("Finalizar compra"),
+           content: Text("Deseja ${situacao} a compra ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+           
             actions: <Widget>[
               FlatButton(
                 onPressed: () {
@@ -426,10 +457,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   }else if(status==0){
                        _finalizaCompra(codCompra);
                   }
-                  Navigator.pop(context);
+                  Navigator.of(context).pop();
                 },
                 child: Icon(Icons.check),
-              ),
+             ),
               FlatButton(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -515,7 +546,34 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
     });
     
-     print(" Valor ${valorCompra} - saldo compra ${saldoCompra} - finalizada ${finalizada}");
+     //print(" Valor ${valorCompra} - saldo compra ${saldoCompra} - finalizada ${finalizada}");
+
+  }
+
+
+  int _selectedIndex = 0;
+
+   void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    
+    switch (_selectedIndex) {
+      case 0:
+        _finalizarReabrirCompraAlert(id_compra, finalizada);
+        break;
+       case 1:
+
+        if (finalizada == 1) {
+          _snackBar2();
+        } else {
+           _exibirTelaCadastro();
+        }         
+       
+        break;
+      default:
+        print("");
+    }
 
   }
 
@@ -531,15 +589,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   @override
   Widget build(BuildContext context) {
 
+  
   _infoCompra(id_compra);
   _recuperarItens(id_compra);
   _sugestoes(); 
   
-      
+  
  
   return Scaffold(
       appBar: AppBar(
-        
+
+                
         leading:IconButton(
                  icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25), 
                  onPressed: (){
@@ -561,24 +621,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           ),
         ),
         centerTitle: true,
-        
-        actions: finalizada != 1 ?
-        
-         <Widget>[
-           IconButton(
-             icon: Icon(
-               Icons.playlist_add, 
-               size: 30
-               ), 
-             onPressed:(){
-                 _exibirTelaCadastro();
-             }
-            )
-        ] :
-        
-         <Widget>[
-          
-        ]
+              
 
       ),
       body: Column(
@@ -665,8 +708,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      title: Text("Excluir"),
-                                      content: Text("Confirmar exclusão ?"),
+                                      //title: Text("Excluir",style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                                      content: Text("Confirmar exclusão ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
                                       actions: <Widget>[
                                         FlatButton(
                                           onPressed: () {
@@ -741,18 +784,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                
                                title: item.status == 1
                                     ? Text(
-                                        item.nome /*+
-                                            " - Total: " +
-                                            item.total.toStringAsFixed(2)*/,
-                                        style: TextStyle(color: Colors.green, fontWeight:FontWeight.bold,letterSpacing:5),
-                                        textAlign: TextAlign.center,
-                                      )
-                                    : Text(item.nome/* +
-                                        " - Total: " +
-                                        item.total.toStringAsFixed(2)*/,
-                                        style: TextStyle(color: Colors.purple, fontWeight:FontWeight.bold,letterSpacing:5),
-                                        textAlign: TextAlign.center,
-                                        ),
+                                        item.nome +
+                                            "     R\$:" +
+                                            item.preco.toStringAsFixed(2) + "   Qtde: " + item.qtde.toStringAsFixed(0),
+                                        style: TextStyle(fontSize: 15, color: Colors.green, fontWeight:FontWeight.bold,letterSpacing:2),
+                                     )
+                                    : Text(item.nome +
+                                            "     R\$:" +
+                                            item.preco.toStringAsFixed(2) + "   Qtde: " + item.qtde.toStringAsFixed(0),
+                                        style: TextStyle(fontSize: 15, color: Colors.purple, fontWeight:FontWeight.bold,letterSpacing:2),
+                                    ),
+                                    
 
                                 //Exibir ações dentro do item de lista.
 
@@ -785,7 +827,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                       
                       <Widget>[
                        Text(
-                          "Clique no botão  ",
+                          "Clique em  ",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.purple),
                         ),
@@ -806,18 +848,35 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         ],
       ),
      
-    
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
+      bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: [
+              BottomNavigationBarItem(
+                icon: finalizada == 0 ? Icon(Icons.lock, color: Colors.red[300], size:30):Icon(Icons.lock_open, color: Colors.green[300], size:30),
+                title: Text(''),
+               ),
+              BottomNavigationBarItem(
+                icon: finalizada == 0 ? Icon(Icons.playlist_add, color:Colors.purple,size:30): Icon(Icons.playlist_add, color:Colors.red,size:30),
+                title: Text(''),
+             ),
+         ],
+         currentIndex: _selectedIndex,
+         onTap: _onItemTapped,
+  )
+     
+     
+
+      /*floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
                        
           onPressed: () {
-           _finalizarReabrirCompraAlert(id_compra, finalizada);
-          },
-          
-          child: finalizada == 1 ? Icon(Icons.lock_open) : Icon(Icons.lock_outline),
-          backgroundColor: finalizada == 1 ? Colors.purple : Colors.pink,
-
-        ),
+          _finalizarReabrirCompraAlert(id_compra, finalizada);
+           },
+           
+          label: finalizada == 1 ? Text('Continuar',style: TextStyle(letterSpacing: 3)) : Text('Finalizar',style: TextStyle(letterSpacing: 3)),
+          backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
+        ),*/
     );
   }
 }

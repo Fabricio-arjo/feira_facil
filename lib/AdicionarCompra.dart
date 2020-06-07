@@ -22,7 +22,8 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController valorController = TextEditingController();
+ MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '.');
+  
   double limite, saldo=0;
   int finalizada = 0;
   var _db = DatabaseHelper();
@@ -53,13 +54,14 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
       limite = double.parse(valorController.text.replaceAll(',','.'));
     });
 
+    if(limite != 0 ){
+         
+
     Compra compra = Compra(limite,saldo,finalizada,DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
     //print("Compra: ${resultado}");
     valorController.clear();
-
-   
 
     Navigator.pushReplacement(
         context,
@@ -70,6 +72,8 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                 )));
      /* var id = await _db.idCompra();
         int cd = id[0]['compra'];  */
+
+       }
    }
 
   String validarCampo = "";
@@ -114,27 +118,30 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     controller: valorController,
                     validator: (value) {
                       if (value.isEmpty) {
-                          
                           return "Informe o limite a ser gasto.";
+                      }else {
+                         return "Informe um valor diferente de zero.";
                       }
                     },
 
                     decoration: InputDecoration(
-                        labelText: "Limite",
+                        //labelText: "Limite",
                         labelStyle: TextStyle(
                           color: Colors.green,
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.normal,
                         ),
-                        hintText: "0.00",
+                        //hintText: "0.00",
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20)),
-                        prefixText: prefix,
-                        prefixStyle: TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20)),
+                            prefixIcon:  Icon(Icons.monetization_on, color: Colors.green,),
+                            /*prefixText: prefix,
+                            prefixStyle: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20)*/
+                        ),
                   ),
                 ),
                 Padding(
@@ -144,9 +151,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           //limiteGasto();
-
-                          _salvarCompra();
-                                                                            
+                         _salvarCompra();
                         }
                       },
                       shape: new RoundedRectangleBorder(
@@ -181,7 +186,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                         style: TextStyle(color: Colors.purple),
                       ),
                       content: Text(
-                        "Limite, é o valor máximo que deseja gastar. Após adicionar itens ao seu carrinho o valor de cada produto será deduzido do valor informado.Permitindo assim, que vc não ultrapasse o valor disponível para compra.",
+                        "Aqui você informa o valor máximo que deseja gastar. Após adicionar itens ao seu carrinho o valor de cada produto será deduzido do valor aqui informado. Permitindo assim, que você não ultrapasse o valor disponível para compra.",
                         textAlign: TextAlign.justify,
                       ),
                       actions: <Widget>[
