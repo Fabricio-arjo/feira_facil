@@ -101,6 +101,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                   padding: EdgeInsets.only(bottom: 5),
                                                
                   child: SimpleAutoCompleteTextField(
+                                        
                     key: null,
                     controller: _nomeController,
                     suggestions: suggestions,
@@ -230,6 +231,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _salvarAtualizarItem({Item itemSelecionado}) async {
 
+    
     String nome = _nomeController.text;
     double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',','.'));
@@ -238,13 +240,16 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     int status;
     int carrinho=0;
     int compra_id = id_compra;
-     
+
     
-    
+  
+  
+       
    if (itemSelecionado == null) {
-            
+       
+      
       Item item = Item(nome, preco, qtde, total, local,DateTime.now().toString(), status,carrinho, compra_id);
-     
+      
       int resultado = await _db.salvarItem(item);
       int sugestao = await  _db.salvarSugestao(item.nome, item.local,item.compra_id);
        
@@ -633,25 +638,39 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           Padding(
             padding: EdgeInsets.only(top: 10, bottom: 10),
             child: Row(
-               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
                  children: <Widget>[
+                      Text(
+                       "Disponível",
+                        style: TextStyle(
+                            color: Colors.purple,
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.bold),
+                         ),
                       Text(
                        "R\$${valorCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                         style: TextStyle(
                             color: Colors.purple,
-                            fontSize: 35,
+                            fontSize: 28,
                             fontStyle: FontStyle.italic,
                             fontWeight: FontWeight.bold),
+                         ),
+                         Text(
+                          "Usado",
+                            style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 16,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.bold),
                          ),
                          Text(
                           "R\$${saldoCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                             style: TextStyle(
                                 color: Colors.blue,
-                                fontSize: 25,
+                                fontSize: 20,
                                 fontStyle: FontStyle.italic,
                                 fontWeight: FontWeight.bold),
-                            
-                            
                          ),
                  ],
 

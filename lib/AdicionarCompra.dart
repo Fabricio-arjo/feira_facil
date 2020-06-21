@@ -22,7 +22,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
- MoneyMaskedTextController valorController = MoneyMaskedTextController(decimalSeparator: ',',thousandSeparator: '.');
+ MoneyMaskedTextController valorController = MoneyMaskedTextController(thousandSeparator: "", decimalSeparator: ",");
   
   double limite, saldo=0;
   int finalizada = 0;
@@ -51,7 +51,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   _salvarCompra() async {
     
     setState(() {
-      limite = double.parse(valorController.text.replaceAll(',','.'));
+      limite = double.parse(valorController.text.replaceAll(",","."));
     });
 
 
@@ -76,10 +76,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
        }
    }
 
-
-
-  
-  @override
+ @override
   Widget build(BuildContext context) {
 
    return Scaffold(
