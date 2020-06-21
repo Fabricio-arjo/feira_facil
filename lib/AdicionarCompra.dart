@@ -28,25 +28,25 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
   int finalizada = 0;
   var _db = DatabaseHelper();
   String prefix = "R\$";
-  
-   
-  /*void limiteGasto() {
+  String _validate = "";
 
-    _salvarCompra();
-     
-       setState(() {
-      limite = double.parse(valorController.text);
-      valorController.clear();
-    });
 
+   _snackBar() {
+          
+          final snackbar = SnackBar(
+              //backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+              content: Text(
+                "O valor não pode ser igual a zero.",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            );
+
+            Scaffold.of(context).showSnackBar(snackbar);
+            return snackbar;
+    }
   
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CarrinhoCompra(
-                  valor: limite,
-                )));
-  }*/
 
   _salvarCompra() async {
     
@@ -54,29 +54,29 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
       limite = double.parse(valorController.text.replaceAll(',','.'));
     });
 
+
+
     if(limite != 0 ){
          
 
     Compra compra = Compra(limite,saldo,finalizada,DateTime.now().toString());
     int resultado = await _db.salvarCompra(compra);
 
-    //print("Compra: ${resultado}");
-    valorController.clear();
+     valorController.clear();
 
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
             builder: (context) => CarrinhoCompra(
                   id_compra: resultado,
-                  /*valor: limite,*/
-                )));
-     /* var id = await _db.idCompra();
-        int cd = id[0]['compra'];  */
-
+            )));
+    
+       }else{
+         _snackBar();
        }
    }
 
-  String validarCampo = "";
+
 
   
   @override
@@ -116,13 +116,12 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     controller: valorController,
-                    validator: (value) {
-                      if (value.isEmpty) {
+                    
+                    /*validator: (value) {
+                    if (value.isEmpty) {
                           return "Informe o limite a ser gasto.";
-                      }else {
-                         return "Informe um valor diferente de zero.";
                       }
-                    },
+                    },*/
 
                     decoration: InputDecoration(
                         //labelText: "Limite",
@@ -142,17 +141,21 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20)*/
                         ),
-                  ),
+                    ),
+                  
                 ),
+
+               //Text(_validate, style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),
+
                 Padding(
                     padding: EdgeInsets.fromLTRB(60, 0, 60, 0),
                     child: RaisedButton.icon(
                       color: Colors.lightGreen,
                       onPressed: () {
-                        if (_formKey.currentState.validate()) {
+                        /*if (_formKey.currentState.validate()) {*/
                           //limiteGasto();
                          _salvarCompra();
-                        }
+                       /*}*/
                       },
                       shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -163,10 +166,13 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                         size: 25,
                       ),
                       label: Text(""),
-                    )),
+                    )
+                    
+                ),
               ],
             )),
       ),
+
       bottomNavigationBar: BottomAppBar(
         //color: Colors.purple,
         elevation: 20.0,

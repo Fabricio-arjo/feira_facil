@@ -413,11 +413,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-           
+            
             content: Container(
-                    height: 35,
-                    child: Text("Reabra a compra para  \n continuar adicionando itens.",
-                     style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                    height: 36,
+                     child: Text("\nCompra Finalizada !",
+                     style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                     textAlign: TextAlign.center,
+                     ),
             ),          
             actions: <Widget>[
               FlatButton(
@@ -446,7 +448,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
         builder: (BuildContext context) {
           return AlertDialog(
            //title: Text("Finalizar compra"),
-           content: Text("Deseja ${situacao} a compra ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+           content: Text("\nDeseja ${situacao} a compra ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+           ),
            
             actions: <Widget>[
               FlatButton(
@@ -709,7 +713,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       //title: Text("Excluir",style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
-                                      content: Text("Confirmar exclusão ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                                      content: Text("\n Confirmar exclusão ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.center,
+                                      ),
                                       actions: <Widget>[
                                         FlatButton(
                                           onPressed: () {
@@ -799,7 +805,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                 //Exibir ações dentro do item de lista.
 
                                 trailing: item.status != 1
-                                    ? Icon(
+                                    ?   Icon(
                                         Icons.add_shopping_cart,
                                         color: Colors.purple,
                                         size: 30,
@@ -853,11 +859,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           showUnselectedLabels: false,
           items: [
               BottomNavigationBarItem(
-                icon: finalizada == 0 ? Icon(Icons.lock, color: Colors.red[300], size:30):Icon(Icons.lock_open, color: Colors.green[300], size:30),
+                icon: finalizada == 0 ? Icon(Icons.lock, color: Colors.purple, size:30):Icon(Icons.lock_open, color: Colors.purple, size:30),
                 title: Text(''),
                ),
               BottomNavigationBarItem(
-                icon: finalizada == 0 ? Icon(Icons.playlist_add, color:Colors.purple,size:30): Icon(Icons.playlist_add, color:Colors.red,size:30),
+                icon: finalizada == 0 ? Icon(Icons.playlist_add, color:Colors.purple,size:30): Icon(Icons.playlist_add, color:Colors.grey[400],size:30),
                 title: Text(''),
              ),
          ],
