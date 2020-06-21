@@ -206,7 +206,9 @@ class _ListaComprasState extends State<ListaCompras> {
                                     builder: (BuildContext context) {
                                       return AlertDialog(
                                         //title: Text("Excluir",style: TextStyle(color: Colors.purple)),
-                                        content: Text("Confirmar exclusão ?",style: TextStyle(color: Colors.purple,fontWeight: FontWeight.bold)),
+                                        content: Text("\nConfirmar exclusão ?",style: TextStyle(color: Colors.purple,fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.center,
+                                        ),
                                         actions: <Widget>[
                                           FlatButton(
                                             onPressed: () {

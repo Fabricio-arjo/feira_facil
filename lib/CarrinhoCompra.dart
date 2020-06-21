@@ -713,7 +713,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       //title: Text("Excluir",style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
-                                      content: Text("\n Confirmar exclusão ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
+                                      content: Text("\Confirmar exclusão ?", style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold),
                                       textAlign: TextAlign.center,
                                       ),
                                       actions: <Widget>[
