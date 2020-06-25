@@ -44,11 +44,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   String situacao = "";
   double valorCompra, saldoCompra;
   double  compra, saldo;
-  
   int voltar, indice = 1;
   
  
-
 
 // Parâmetro opcional se existir item é uma edição
   _exibirTelaCadastro({Item item}) {
@@ -231,7 +229,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _salvarAtualizarItem({Item itemSelecionado}) async {
 
-    
+    if((_precoController.text.isEmpty == true)){
+       setState(() {
+          _precoController.text = "0,0";
+       });
+    }
+
+
     String nome = _nomeController.text;
     double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',','.'));
@@ -241,9 +245,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     int carrinho=0;
     int compra_id = id_compra;
 
-    
-  
-  
+      
        
    if (itemSelecionado == null) {
        
