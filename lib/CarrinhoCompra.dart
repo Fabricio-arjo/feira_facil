@@ -53,6 +53,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     
       
     String textoSalvarAtualizar = "";
+    
     if (item == null) {
       //Salvando
 
@@ -68,7 +69,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
        
       _nomeController.text = item.nome.toString();
       _precoController.text =  item.preco.toStringAsFixed(2);
-      _qtdeController.text = item.qtde.toString();
+      _qtdeController.text = item.qtde.toStringAsFixed(3);
       _localController.text = item.local.toString();
 
       textoSalvarAtualizar = "Atualizar";
@@ -229,10 +230,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
   _salvarAtualizarItem({Item itemSelecionado}) async {
 
-    if((_precoController.text.isEmpty == true)){
+    if((_precoController.text.isEmpty == true) || (_qtdeController.text.isEmpty == true) || (_localController.text.isEmpty == true)){
+       
        setState(() {
-          _precoController.text = "0,0";
+          _precoController.text = "0";
+          _qtdeController.text = "0";
+          _localController.text = "";
        });
+
     }
 
 
@@ -240,6 +245,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',','.'));
     double total = preco * qtde;
+
     String local = _localController.text;
     int status;
     int carrinho=0;
@@ -727,9 +733,19 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                               ],
                             ),
                           ),
+                         
                           confirmDismiss: (direction) {
+
                             if (direction == DismissDirection.endToStart) {
-                              showDialog(
+                             
+                             if(finalizada == 1){
+
+                                 _snackBar2();
+
+                              } else {
+
+
+                             showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
@@ -755,8 +771,18 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                       ],
                                     );
                                   });
+                              }
+                           
                             } else if (direction ==
                                 DismissDirection.startToEnd) {
+
+                               if(finalizada == 1){
+                                  
+                                   _snackBar2();
+
+                               }else {
+
+
                               _exibirTelaCadastro(item: item);
 
                              if(item.selected == true){
@@ -773,7 +799,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                              }   
           
                             }
+                          }
+                          
                           },
+         
                         
                           child: GestureDetector(
                             
@@ -813,12 +842,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                     ? Text(
                                         item.nome +
                                             "     R\$:" +
-                                            item.preco.toStringAsFixed(2) + "   Qtde: " + item.qtde.toStringAsFixed(0),
+                                            item.preco.toStringAsFixed(2) + "   Qtde: " + item.qtde.toStringAsFixed(3),
                                         style: TextStyle(fontSize: 15, color: Colors.green, fontWeight:FontWeight.bold,letterSpacing:2),
                                      )
                                     : Text(item.nome +
                                             "     R\$:" +
-                                            item.preco.toStringAsFixed(2) + "   Qtde: " + item.qtde.toStringAsFixed(0),
+                                            item.preco.toStringAsFixed(2) + "   Qtde: " + item.qtde.toStringAsFixed(3),
                                         style: TextStyle(fontSize: 15, color: Colors.purple, fontWeight:FontWeight.bold,letterSpacing:2),
                                     ),
                                     

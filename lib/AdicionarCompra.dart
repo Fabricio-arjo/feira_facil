@@ -37,7 +37,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
               //backgroundColor: Colors.green,
               duration: Duration(seconds: 2),
               content: Text(
-                "O valor não pode ser igual a zero.",
+                "Informe um valor diferente de zero.",
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),

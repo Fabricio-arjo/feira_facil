@@ -214,7 +214,7 @@ class _ListaComprasState extends State<ListaCompras> {
                                             onPressed: () {
                                               _removerCompra(compra.idDcompra);
                                               Navigator.pop(context);
-                                              _snackBar();
+                                              //_snackBar();
                                             },
                                             child: Icon(Icons.check),
                                           ),
