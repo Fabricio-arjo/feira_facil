@@ -36,7 +36,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
   MoneyMaskedTextController _precoController =
       MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
   TextEditingController _qtdeController =
-      MaskedTextController(mask: '0,000', text: '12345');
+      MaskedTextController(mask: '0000,000', text: '');
   TextEditingController _localController = TextEditingController(text: "");
 
   String currentText = "";
@@ -609,164 +609,215 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                             item.selected = false;
                           }
 
-                          return Dismissible(
-                            key: Key(item.id.toString()),
-                            background: Container(
-                              color: Colors.green,
-                              padding: EdgeInsets.all(16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                  )
-                                ],
-                              ),
-                            ),
-                            secondaryBackground: Container(
-                              color: Colors.red,
-                              padding: EdgeInsets.all(16),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.delete,
-                                    color: Colors.white,
-                                  )
-                                ],
-                              ),
-                            ),
-                            confirmDismiss: (direction) {
-                              if (direction == DismissDirection.endToStart) {
-                                if (finalizada == 1) {
-                                  _snackBar2();
-                                } else {
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          //title: Text("Excluir",style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
-                                          content: Text(
-                                            "\Confirmar exclusão ?",
-                                            style: TextStyle(
-                                                color: Colors.purple,
-                                                fontWeight: FontWeight.bold),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          actions: <Widget>[
-                                            FlatButton(
-                                              onPressed: () {
-                                                _removerItem(item.id,
-                                                    item.total, item.selected);
-                                                Navigator.pop(context);
-                                                _snackBar();
-                                              },
-                                              child: Icon(Icons.check),
-                                            ),
-                                            FlatButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Icon(Icons.close))
-                                          ],
-                                        );
-                                      });
-                                }
-                              } else if (direction ==
-                                  DismissDirection.startToEnd) {
-                                if (finalizada == 1) {
-                                  _snackBar2();
-                                } else {
-                                  _exibirTelaCadastro(item: item);
+                          return finalizada != 1
+                              ? Dismissible(
+                                  key: Key(item.id.toString()),
+                                  background: Container(
+                                    color: Colors.green,
+                                    padding: EdgeInsets.all(16),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  secondaryBackground: Container(
+                                    color: Colors.red,
+                                    padding: EdgeInsets.all(16),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  confirmDismiss: (direction) {
+                                    if (direction ==
+                                        DismissDirection.endToStart) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              //title: Text("Excluir",style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
+                                              content: Text(
+                                                "\Confirmar exclusão ?",
+                                                style: TextStyle(
+                                                    color: Colors.purple,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                              actions: <Widget>[
+                                                FlatButton(
+                                                  onPressed: () {
+                                                    _removerItem(
+                                                        item.id,
+                                                        item.total,
+                                                        item.selected);
+                                                    Navigator.pop(context);
+                                                    _snackBar();
+                                                  },
+                                                  child: Icon(Icons.check),
+                                                ),
+                                                FlatButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Icon(Icons.close))
+                                              ],
+                                            );
+                                          });
+                                    } else if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      _exibirTelaCadastro(item: item);
 
-                                  if (item.selected == true) {
-                                    compra = valorCompra;
-                                    saldo = saldoCompra;
+                                      if (item.selected == true) {
+                                        compra = valorCompra;
+                                        saldo = saldoCompra;
 
-                                    setState(() {
-                                      compra += item.total;
-                                      saldo -= item.total;
-                                    });
-
-                                    print(compra.toString() +
-                                        " ---- " +
-                                        saldo.toString());
-                                  }
-                                }
-                              }
-                            },
-                            child: GestureDetector(
-                              onTap: finalizada != 1
-                                  ? () {
-                                      setState(() {
-                                        if (item.selected == false) {
-                                          item.selected = true;
-                                        } else {
-                                          item.selected = false;
-                                        }
-                                        _atualizaStatus(item, item.selected);
-                                      });
-
-                                      if (valorCompra < item.total) {
                                         setState(() {
-                                          item.status = 0;
+                                          compra += item.total;
+                                          saldo -= item.total;
                                         });
-                                        _disponivel(0, item.selected);
-                                        _controleSaldo(item.total);
-                                      } else {
-                                        _disponivel(item.total, item.selected);
+
+                                        print(compra.toString() +
+                                            " ---- " +
+                                            saldo.toString());
                                       }
                                     }
-                                  : () {},
-                              child: Card(
-                                color: Colors.grey[100],
-                                elevation: 3.0,
-                                key: Key(item.toString()),
-                                child: ListTile(
-                                  title: item.status == 1
-                                      ? Text(
-                                          item.nome +
-                                              "     R\$:" +
-                                              item.preco.toStringAsFixed(2) +
-                                              "   Qtde: " +
-                                              item.qtde.toStringAsFixed(3),
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.green,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 2),
-                                        )
-                                      : Text(
-                                          item.nome +
-                                              "     R\$:" +
-                                              item.preco.toStringAsFixed(2) +
-                                              "   Qtde: " +
-                                              item.qtde.toStringAsFixed(3),
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.purple,
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 2),
-                                        ),
+                                  },
+                                  child: GestureDetector(
+                                    onTap: finalizada != 1
+                                        ? () {
+                                            setState(() {
+                                              if (item.selected == false) {
+                                                item.selected = true;
+                                              } else {
+                                                item.selected = false;
+                                              }
+                                              _atualizaStatus(
+                                                  item, item.selected);
+                                            });
 
-                                  //Exibir ações dentro do item de lista.
+                                            if (valorCompra < item.total) {
+                                              setState(() {
+                                                item.status = 0;
+                                              });
+                                              _disponivel(0, item.selected);
+                                              _controleSaldo(item.total);
+                                            } else {
+                                              _disponivel(
+                                                  item.total, item.selected);
+                                            }
+                                          }
+                                        : () {},
+                                    child: Card(
+                                      color: Colors.grey[100],
+                                      elevation: 3.0,
+                                      key: Key(item.toString()),
+                                      child: ListTile(
+                                        title: item.status == 1
+                                            ? Text(
+                                                item.nome +
+                                                    "     R\$:" +
+                                                    item.preco
+                                                        .toStringAsFixed(2) +
+                                                    "   Qtde: " +
+                                                    item.qtde
+                                                        .toStringAsFixed(3),
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.green,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 2),
+                                              )
+                                            : Text(
+                                                item.nome +
+                                                    "     R\$:" +
+                                                    item.preco
+                                                        .toStringAsFixed(2) +
+                                                    "   Qtde: " +
+                                                    item.qtde
+                                                        .toStringAsFixed(3),
+                                                style: TextStyle(
+                                                    fontSize: 15,
+                                                    color: Colors.purple,
+                                                    fontWeight: FontWeight.bold,
+                                                    letterSpacing: 2),
+                                              ),
 
-                                  trailing: item.status != 1
-                                      ? Icon(
-                                          Icons.add_shopping_cart,
-                                          color: Colors.purple,
-                                          size: 30,
-                                        )
-                                      : Icon(
-                                          Icons.shopping_cart,
-                                          color: Colors.green,
-                                          size: 30,
-                                        ),
-                                ),
-                              ),
-                            ),
-                          );
+                                        //Exibir ações dentro do item de lista.
+
+                                        trailing: item.status != 1
+                                            ? Icon(
+                                                Icons.add_shopping_cart,
+                                                color: Colors.purple,
+                                                size: 30,
+                                              )
+                                            : Icon(
+                                                Icons.shopping_cart,
+                                                color: Colors.green,
+                                                size: 30,
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              : Card(
+                                  color: Colors.grey[100],
+                                  elevation: 3.0,
+                                  key: Key(item.toString()),
+                                  child: ListTile(
+                                    title: item.status == 1
+                                        ? Text(
+                                            item.nome +
+                                                "     R\$:" +
+                                                item.preco.toStringAsFixed(2) +
+                                                "   Qtde: " +
+                                                item.qtde.toStringAsFixed(3),
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 2),
+                                          )
+                                        : Text(
+                                            item.nome +
+                                                "     R\$:" +
+                                                item.preco.toStringAsFixed(2) +
+                                                "   Qtde: " +
+                                                item.qtde.toStringAsFixed(3),
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.purple,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 2),
+                                          ),
+
+                                    //Exibir ações dentro do item de lista.
+
+                                    trailing: item.status != 1
+                                        ? Icon(
+                                            Icons.add_shopping_cart,
+                                            color: Colors.purple,
+                                            size: 30,
+                                          )
+                                        : Icon(
+                                            Icons.shopping_cart,
+                                            color: Colors.green,
+                                            size: 30,
+                                          ),
+                                  ),
+                                );
                         },
                       )
                     : Center(

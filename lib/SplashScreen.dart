@@ -12,7 +12,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Timer(Duration(seconds: 6), () {
+    Timer(Duration(seconds: 3), () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => Home()));
     });
@@ -40,25 +40,15 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 171,
                 width: 171,
               ),
-              SizedBox(
-                width: 500,
-                child: TextLiquidFill(
-                  text: 'Gasto Certo',
-                  waveColor: Colors.white,
-                  boxBackgroundColor: Colors.purple,
-                  textStyle: TextStyle(
-                    fontSize: 40.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  boxHeight: 50.0,
+              Text(
+                "\nGasto \$ Certo",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
                 ),
-              ),
-
-              /*Text(
-                "\nGasto Certo",
-                style: TextStyle(color: Colors.yellow),
                 textAlign: TextAlign.right,
-              )*/
+              )
             ],
           ),
           //child: Image.asset("images/logo.png"),
