@@ -735,6 +735,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                                     item.qtde
                                                         .toStringAsFixed(3),
                                                 style: TextStyle(
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
                                                     fontSize: 15,
                                                     color: Colors.green,
                                                     fontWeight: FontWeight.bold,
@@ -785,6 +787,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                                 "   Qtde: " +
                                                 item.qtde.toStringAsFixed(3),
                                             style: TextStyle(
+                                                decoration:
+                                                    TextDecoration.lineThrough,
                                                 fontSize: 15,
                                                 color: Colors.green,
                                                 fontWeight: FontWeight.bold,
