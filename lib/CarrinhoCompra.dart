@@ -725,6 +725,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                       elevation: 3.0,
                                       key: Key(item.toString()),
                                       child: ListTile(
+                                        leading: item.status != 1
+                                            ? Icon(
+                                                Icons.check_box_outline_blank,
+                                                color: Colors.purple,
+                                                size: 30,
+                                              )
+                                            : Icon(
+                                                Icons.check_box,
+                                                color: Colors.green,
+                                                size: 30,
+                                              ),
                                         title: item.status == 1
                                             ? Text(
                                                 item.nome +
@@ -759,7 +770,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
 
                                         //Exibir ações dentro do item de lista.
 
-                                        trailing: item.status != 1
+                                        /*trailing: item.status != 1
                                             ? Icon(
                                                 Icons.add_shopping_cart,
                                                 color: Colors.purple,
@@ -769,7 +780,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                                 Icons.shopping_cart,
                                                 color: Colors.green,
                                                 size: 30,
-                                              ),
+                                              ),*/
                                       ),
                                     ),
                                   ),
