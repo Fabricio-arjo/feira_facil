@@ -11,6 +11,7 @@ import 'package:feira_facil/helper/DatabaseHelper.dart';
 import 'model/Compra.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_masked_text/flutter_masked_text.Dart';
+import 'package:animations/animations.dart';
 
 class CarrinhoCompra extends StatefulWidget {
   CarrinhoCompra({this.valor, this.id_compra});
@@ -23,8 +24,12 @@ class CarrinhoCompra extends StatefulWidget {
       _CarrinhoCompraState(this.valor, this.id_compra);
 }
 
-class _CarrinhoCompraState extends State<CarrinhoCompra> {
+class _CarrinhoCompraState extends State<CarrinhoCompra>
+    with TickerProviderStateMixin {
   _CarrinhoCompraState(this.valor, this.id_compra);
+
+  AnimationController _controller;
+  Animation<double> _animation;
 
   double valor;
   int id_compra;
@@ -521,9 +526,31 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
     }
   }
 
+  int anima;
+
+  void _animacao(int a) {
+    if (anima == 1) {
+      _controller = AnimationController(
+          duration: const Duration(milliseconds: 3000),
+          vsync: this,
+          value: 0.1);
+      _animation =
+          CurvedAnimation(parent: _controller, curve: Curves.bounceInOut);
+
+      _controller.forward();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _controller.dispose();
   }
 
   @override
@@ -554,14 +581,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
           ),
           centerTitle: true,
           actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.shopping_cart,
-                color: Colors.white,
-                size: 30,
+            ScaleTransition(
+              scale: _animation,
+              child: IconButton(
+                icon: Icon(
+                  Icons.shopping_cart,
+                  color: Colors.white,
+                  size: 30,
+                ),
+                onPressed: () {},
               ),
-              onPressed: () {},
-            )
+            ),
           ],
         ),
         body: Column(
@@ -711,6 +741,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                             setState(() {
                                               if (item.selected == false) {
                                                 item.selected = true;
+                                                setState() {
+                                                  anima = 1;
+                                                }
+                                                _animacao(anima);
+                                                
                                               } else {
                                                 item.selected = false;
                                               }
@@ -751,10 +786,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                                 item.nome +
                                                     "     R\$:" +
                                                     item.preco
-                                                        .toStringAsFixed(2) +
+                                                        .toStringAsFixed(2)
+                                                        .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toStringAsFixed(3),
+                                                        .toStringAsFixed(3)
+                                                        .replaceAll(".", ","),
                                                 style: TextStyle(
                                                     decoration: TextDecoration
                                                         .lineThrough,
@@ -767,10 +804,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                                 item.nome +
                                                     "     R\$:" +
                                                     item.preco
-                                                        .toStringAsFixed(2) +
+                                                        .toStringAsFixed(2)
+                                                        .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toStringAsFixed(3),
+                                                        .toStringAsFixed(3)
+                                                        .replaceAll(".", ","),
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.purple,
@@ -815,9 +854,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                         ? Text(
                                             item.nome +
                                                 "     R\$:" +
-                                                item.preco.toStringAsFixed(2) +
+                                                item.preco
+                                                    .toStringAsFixed(2)
+                                                    .replaceAll(".", ",") +
                                                 "   Qtde: " +
-                                                item.qtde.toStringAsFixed(3),
+                                                item.qtde
+                                                    .toStringAsFixed(3)
+                                                    .replaceAll(".", ","),
                                             style: TextStyle(
                                                 decoration:
                                                     TextDecoration.lineThrough,
@@ -829,9 +872,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
                                         : Text(
                                             item.nome +
                                                 "     R\$:" +
-                                                item.preco.toStringAsFixed(2) +
+                                                item.preco
+                                                    .toStringAsFixed(2)
+                                                    .replaceAll(".", ",") +
                                                 "   Qtde: " +
-                                                item.qtde.toStringAsFixed(3),
+                                                item.qtde
+                                                    .toStringAsFixed(3)
+                                                    .replaceAll(".", ","),
                                             style: TextStyle(
                                                 fontSize: 15,
                                                 color: Colors.purple,
@@ -907,6 +954,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra> {
            
           label: finalizada == 1 ? Text('Continuar',style: TextStyle(letterSpacing: 3)) : Text('Finalizar',style: TextStyle(letterSpacing: 3)),
           backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
+        ),*/
+        );
+  }
+}
+: Colors.pink,
         ),*/
         );
   }

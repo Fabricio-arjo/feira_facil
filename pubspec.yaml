@@ -28,6 +28,7 @@ dependencies:
   autocomplete_textfield: ^1.7.3
   flutter_masked_text: ^0.8.0
   animated_text_kit: ^2.2.0
+  animations: ^1.1.2
   
 
 dev_dependencies:

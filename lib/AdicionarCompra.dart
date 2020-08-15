@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:developer';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
 import 'package:feira_facil/model/Compra.dart';
-import 'package:flutter/material.dart';
 import 'package:feira_facil/CarrinhoCompra.dart';
 import 'package:feira_facil/model/Item.dart';
 //import 'package:feira_facil/helper/ItemHelper.dart';
@@ -12,74 +11,64 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'ListaCompras.dart';
 import 'package:flutter_masked_text/flutter_masked_text.Dart';
 
-
 class AdicionarCompra extends StatefulWidget {
   @override
   _AdicionarCompraState createState() => _AdicionarCompraState();
 }
 
 class _AdicionarCompraState extends State<AdicionarCompra> {
-
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
- MoneyMaskedTextController valorController = MoneyMaskedTextController(thousandSeparator: "", decimalSeparator: ",");
-  
-  double limite, saldo=0;
+  MoneyMaskedTextController valorController =
+      MoneyMaskedTextController(thousandSeparator: "", decimalSeparator: ",");
+
+  double limite, saldo = 0;
   int finalizada = 0;
   var _db = DatabaseHelper();
   String prefix = "R\$";
   String _validate = "";
 
+  _snackBar() {
+    final snackbar = SnackBar(
+      //backgroundColor: Colors.green,
+      duration: Duration(seconds: 2),
+      content: Text(
+        "Informe um valor diferente de zero.",
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+    );
 
-   _snackBar() {
-          
-          final snackbar = SnackBar(
-              //backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-              content: Text(
-                "Informe um valor diferente de zero.",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            );
-
-            Scaffold.of(context).showSnackBar(snackbar);
-            return snackbar;
-    }
-  
+    Scaffold.of(context).showSnackBar(snackbar);
+    return snackbar;
+  }
 
   _salvarCompra() async {
-    
     setState(() {
-      limite = double.parse(valorController.text.replaceAll(",","."));
+      limite = double.parse(valorController.text.replaceAll(",", "."));
     });
 
+    if (limite != 0) {
+      Compra compra =
+          Compra(limite, saldo, finalizada, DateTime.now().toString());
+      int resultado = await _db.salvarCompra(compra);
 
+      valorController.clear();
 
-    if(limite != 0 ){
-         
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CarrinhoCompra(
+                    id_compra: resultado,
+                  )));
+    } else {
+      _snackBar();
+    }
+  }
 
-    Compra compra = Compra(limite,saldo,finalizada,DateTime.now().toString());
-    int resultado = await _db.salvarCompra(compra);
-
-     valorController.clear();
-
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CarrinhoCompra(
-                  id_compra: resultado,
-            )));
-    
-       }else{
-         _snackBar();
-       }
-   }
-
- @override
+  @override
   Widget build(BuildContext context) {
-
-   return Scaffold(
+    return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         reverse: true,
@@ -113,7 +102,7 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.center,
                     controller: valorController,
-                    
+
                     /*validator: (value) {
                     if (value.isEmpty) {
                           return "Informe o limite a ser gasto.";
@@ -121,28 +110,30 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                     },*/
 
                     decoration: InputDecoration(
-                        //labelText: "Limite",
-                        labelStyle: TextStyle(
-                          color: Colors.green,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.normal,
-                        ),
-                        //hintText: "0.00",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                            prefixIcon:  Icon(Icons.monetization_on, color: Colors.green,),
-                            /*prefixText: prefix,
+                      //labelText: "Limite",
+                      labelStyle: TextStyle(
+                        color: Colors.green,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.normal,
+                      ),
+                      //hintText: "0.00",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      prefixIcon: Icon(
+                        Icons.monetization_on,
+                        color: Colors.green,
+                      ),
+                      /*prefixText: prefix,
                             prefixStyle: TextStyle(
                                 color: Colors.green,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20)*/
-                        ),
                     ),
-                  
+                  ),
                 ),
 
-               //Text(_validate, style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),
+                //Text(_validate, style: TextStyle(color: Colors.red), textAlign: TextAlign.center,),
 
                 Padding(
                     padding: EdgeInsets.fromLTRB(60, 0, 60, 0),
@@ -150,9 +141,9 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                       color: Colors.lightGreen,
                       onPressed: () {
                         /*if (_formKey.currentState.validate()) {*/
-                          //limiteGasto();
-                         _salvarCompra();
-                       /*}*/
+                        //limiteGasto();
+                        _salvarCompra();
+                        /*}*/
                       },
                       shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
@@ -163,13 +154,10 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
                         size: 25,
                       ),
                       label: Text(""),
-                    )
-                    
-                ),
+                    )),
               ],
             )),
       ),
-
       bottomNavigationBar: BottomAppBar(
         //color: Colors.purple,
         elevation: 20.0,
