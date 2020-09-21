@@ -71,7 +71,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
       _nomeController.text = item.nome.toString();
       _precoController.text = item.preco.toStringAsFixed(2);
-      _qtdeController.text = item.qtde.toStringAsFixed(3);
+      _qtdeController.text = item.qtde.toString();
       _localController.text = item.local.toString();
 
       textoSalvarAtualizar = "Atualizar";
@@ -100,6 +100,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Nome",
+                        //errorText: _validate ? 'Value Can\'t Be Empty' : null
                         //hintText: "Ex: Arroz"
                       ),
                     ),
@@ -184,25 +185,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
         });
   }
 
-  _recuperarItens(int id_compra) async {
-    List itensRecuperados = await _db.recuperarItens(id_compra);
-
-    //Guardar dentro do for na lista temporaria
-    List<Item> listaTemporaria = List<Item>();
-
-    for (var itm in itensRecuperados) {
-      Item item = Item.fromMap(itm);
-      listaTemporaria.add(item);
-    }
-    setState(() {
-      _itens = listaTemporaria;
-    });
-
-    listaTemporaria = null;
-
-    //print("Lista itens: " +itensRecuperados.toString());
-  }
-
   _salvarAtualizarItem({Item itemSelecionado}) async {
     if ((_precoController.text.isEmpty == true) ||
         (_qtdeController.text.isEmpty == true) ||
@@ -210,7 +192,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       setState(() {
         _precoController.text = "0";
         _qtdeController.text = "0";
-        _localController.text = "";
+        _localController.text = "Vazio";
       });
     }
 
@@ -218,7 +200,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',', '.'));
     double total = preco * qtde;
-
     String local = _localController.text;
     int status;
     int carrinho = 0;
@@ -229,6 +210,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
           DateTime.now().toString(), status, carrinho, compra_id);
 
       int resultado = await _db.salvarItem(item);
+
       int sugestao =
           await _db.salvarSugestao(item.nome, item.local, item.compra_id);
     } else {
@@ -240,6 +222,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       itemSelecionado.data = DateTime.now().toString();
 
       int resultado = await _db.atualizarItem(itemSelecionado);
+
       int sugestao = await _db.salvarSugestao(itemSelecionado.nome,
           itemSelecionado.local, itemSelecionado.compra_id);
 
@@ -259,6 +242,25 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     _localController.clear();
 
     _recuperarItens(id_compra);
+  }
+
+  _recuperarItens(int id_compra) async {
+    List itensRecuperados = await _db.recuperarItens(id_compra);
+
+    //Guardar dentro do for na lista temporaria
+    List<Item> listaTemporaria = List<Item>();
+
+    for (var itm in itensRecuperados) {
+      Item item = Item.fromMap(itm);
+      listaTemporaria.add(item);
+    }
+    setState(() {
+      _itens = listaTemporaria;
+    });
+
+    listaTemporaria = null;
+
+    // print("Lista itens: " + itensRecuperados.toString());
   }
 
   //Atualiza a coluna Status
@@ -526,21 +528,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     }
   }
 
-  int anima;
-
-  void _animacao(int a) {
-    if (anima == 1) {
-      _controller = AnimationController(
-          duration: const Duration(milliseconds: 3000),
-          vsync: this,
-          value: 0.1);
-      _animation =
-          CurvedAnimation(parent: _controller, curve: Curves.bounceInOut);
-
-      _controller.forward();
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -550,7 +537,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _controller.dispose();
   }
 
   @override
@@ -561,39 +547,32 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
     return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25),
-              onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => Home(
-                              voltar: indice,
-                            )));
-              }),
-          backgroundColor: Colors.purple,
-          title: Text(
-            "Itens",
-            style: TextStyle(
-              fontStyle: FontStyle.normal,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-          actions: <Widget>[
-            ScaleTransition(
-              scale: _animation,
-              child: IconButton(
-                icon: Icon(
-                  Icons.shopping_cart,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () {},
+            leading: IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Home(
+                                voltar: indice,
+                              )));
+                }),
+            backgroundColor: Colors.purple,
+            title: Text(
+              "Itens",
+              style: TextStyle(
+                fontStyle: FontStyle.normal,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
-        ),
+            centerTitle: true,
+            actions: <Widget>[
+              Icon(
+                Icons.shopping_cart,
+                color: Colors.white,
+                size: 30,
+              ),
+            ]),
         body: Column(
           children: <Widget>[
             Padding(
@@ -741,11 +720,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             setState(() {
                                               if (item.selected == false) {
                                                 item.selected = true;
-                                                setState() {
-                                                  anima = 1;
-                                                }
-                                                _animacao(anima);
-                                                
                                               } else {
                                                 item.selected = false;
                                               }
@@ -954,11 +928,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
            
           label: finalizada == 1 ? Text('Continuar',style: TextStyle(letterSpacing: 3)) : Text('Finalizar',style: TextStyle(letterSpacing: 3)),
           backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
-        ),*/
-        );
-  }
-}
-: Colors.pink,
         ),*/
         );
   }

@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Colors;
 import 'dart:developer';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
 import 'package:feira_facil/model/Compra.dart';
 import 'package:feira_facil/CarrinhoCompra.dart';
 import 'package:feira_facil/model/Item.dart';
+import 'package:flutter/material.dart';
 //import 'package:feira_facil/helper/ItemHelper.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';

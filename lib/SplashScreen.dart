@@ -40,15 +40,6 @@ class _SplashScreenState extends State<SplashScreen> {
                 height: 171,
                 width: 171,
               ),
-              Text(
-                "\nGasto \$ Certo",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
-                textAlign: TextAlign.right,
-              )
             ],
           ),
           //child: Image.asset("images/logo.png"),
