@@ -37,12 +37,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   double _saldo;
   List<Item> _itens = List<Item>();
 
-  TextEditingController _nomeController = TextEditingController(text: "");
+  TextEditingController _nomeController = TextEditingController(text: '');
   MoneyMaskedTextController _precoController =
       MoneyMaskedTextController(decimalSeparator: ',', thousandSeparator: '.');
-  TextEditingController _qtdeController =
-      MaskedTextController(mask: '0000,000', text: '');
-  TextEditingController _localController = TextEditingController(text: "");
+  TextEditingController _qtdeController = TextEditingController(text: '');
+  TextEditingController _localController = TextEditingController(text: '');
 
   String currentText = "";
   List<String> suggestions = [];
@@ -80,7 +79,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
+          return SingleChildScrollView(
+              child: AlertDialog(
             title: Text(textoSalvarAtualizar + " Item",
                 style: TextStyle(
                   color: Colors.purple,
@@ -99,7 +99,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                       textChanged: (text) => currentText = text,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: "Nome",
+                        labelText: "Descrição",
                         //errorText: _validate ? 'Value Can\'t Be Empty' : null
                         //hintText: "Ex: Arroz"
                       ),
@@ -181,17 +181,19 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                   onPressed: () => Navigator.pop(context),
                   child: Icon(Icons.close)),
             ],
-          );
+          ));
         });
   }
 
   _salvarAtualizarItem({Item itemSelecionado}) async {
     if ((_precoController.text.isEmpty == true) ||
-        (_qtdeController.text.isEmpty == true) ||
-        (_localController.text.isEmpty == true)) {
+        (_qtdeController.text.isEmpty == true)) {
       setState(() {
         _precoController.text = "0";
         _qtdeController.text = "0";
+      });
+    } else if ((_localController.text.isEmpty == true)) {
+      setState(() {
         _localController.text = "Vazio";
       });
     }
@@ -452,31 +454,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     }
     //print("Dados: "+ suggestions.toString());
   }
-
-  /* _insereCarrinho(int id_compra, int id_item) async {
-    int  resultado = await _db.inserirCarrinho(id_compra, id_item);
-    print(" Insert " + resultado.toString());
-    
-    _itensCarrinho();
-  }*/
-
-  /* _removeCarrinho(int id_item) async {
-    int resultado = await _db.removerCarrinho(id_item);
-    print(" Remove shopping cart " + resultado.toString());
-    
-    //_itensCarrinho();
-  }*/
-
-  /*_itensCarrinho() async {
-     var valor = (await _db.itensCarrinho())[0]['total'];
-    
-     setState(()=>noCarrinho = valor);
-     print("Count: ${noCarrinho}");
-
-     /*if (noCarrinho == _itens.length) {
-        _finalizarCompraAlert(id_compra);
-     }*/
-  }*/
 
   _finalizaCompra(int id_compra) async {
     if (id_compra != null) {
@@ -764,7 +741,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                         .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toStringAsFixed(3)
+                                                        .toString()
                                                         .replaceAll(".", ","),
                                                 style: TextStyle(
                                                     decoration: TextDecoration
@@ -782,7 +759,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                         .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toStringAsFixed(3)
+                                                        .toString()
                                                         .replaceAll(".", ","),
                                                 style: TextStyle(
                                                     fontSize: 15,
