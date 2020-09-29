@@ -28,6 +28,21 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     with TickerProviderStateMixin {
   _CarrinhoCompraState(this.valor, this.id_compra);
 
+  //Dropdown
+  String unidadeMedida = "";
+  var _unidades = ['Tipo', 'g', 'Kg', 'Unidade'];
+  var _itemSelecionado = 'Tipo';
+  String uni;
+
+  _unidadeMedida(String dado) {
+    setState(() {
+      uni = dado;
+    });
+
+    print("Unidade de medida: " + uni);
+  }
+  //
+
   AnimationController _controller;
   Animation<double> _animation;
 
@@ -100,16 +115,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: "Descrição",
-                        //errorText: _validate ? 'Value Can\'t Be Empty' : null
+
                         //hintText: "Ex: Arroz"
                       ),
                     ),
                   ),
+                  //Inicio da linha
                   Row(
                     children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(4),
-                        width: 120,
+                        width: 100,
                         child: TextField(
                           controller: _precoController,
                           //autofocus: true,
@@ -121,11 +137,29 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                           ),
                         ),
                       ),
-
-                      //Divider(),
+                      Container(
+                        padding: EdgeInsets.all(4),
+                        width: 135,
+                        child: SimpleAutoCompleteTextField(
+                          key: null,
+                          controller: _localController,
+                          keyboardType: TextInputType.text,
+                          suggestions: suggestions,
+                          textChanged: (text) => currentText = text,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: "Local",
+                            //hintText: "Ex: Estabelecimento"
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
                       Container(
                         padding: EdgeInsets.all(5),
-                        width: 110,
+                        width: 100,
                         child: TextField(
                           controller: _qtdeController,
                           keyboardType: TextInputType.number,
@@ -137,35 +171,34 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(5, 5, 5, 0),
-                    child: SimpleAutoCompleteTextField(
-                      key: null,
-                      controller: _localController,
-                      keyboardType: TextInputType.text,
-                      suggestions: suggestions,
-                      textChanged: (text) => currentText = text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Local",
-                        //hintText: "Ex: Estabelecimento"
-                      ),
-                    ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                        width: 100,
+                        child: DropdownButton<String>(
+                            items: _unidades.map((String dropDownStringItem) {
+                              return DropdownMenuItem<String>(
+                                value: dropDownStringItem,
+                                child: Text(
+                                  dropDownStringItem,
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String novoItemSelecionado) {
+                              _dropDownItemSelected(novoItemSelecionado);
 
-                    /*TextField(
-                    controller: _localController,
-                    maxLength: 20,
-                    keyboardType: TextInputType.text,
-                    //autofocus: true,
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Local",
-                        //hintText: "Ex: Estabelecimento"
+                              setState(() {
+                                this._itemSelecionado = novoItemSelecionado;
+                              });
+
+                              _unidadeMedida(_itemSelecionado);
+                            },
+                            value: _itemSelecionado),
                       ),
-                  ),*/
+                    ],
                   )
+
+                  //Fim da Linha
                 ],
               ),
             ),
@@ -186,15 +219,19 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   }
 
   _salvarAtualizarItem({Item itemSelecionado}) async {
-    if ((_precoController.text.isEmpty == true) ||
-        (_qtdeController.text.isEmpty == true)) {
+    if (_precoController.text.isEmpty == true) {
       setState(() {
-        _precoController.text = "0";
-        _qtdeController.text = "0";
+        _precoController.text = '0';
       });
-    } else if ((_localController.text.isEmpty == true)) {
+
+      if (_qtdeController.text.isEmpty == true) {
+        setState(() {
+          _qtdeController.text = '0';
+        });
+      }
+    } else if (_localController.text.isEmpty == true) {
       setState(() {
-        _localController.text = "Vazio";
+        _localController.text = 'Local';
       });
     }
 
@@ -907,5 +944,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
           backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
         ),*/
         );
+  }
+
+  void _dropDownItemSelected(String novoItem) {
+    setState(() {
+      this._itemSelecionado = novoItem;
+    });
   }
 }
