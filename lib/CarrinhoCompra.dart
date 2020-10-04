@@ -29,19 +29,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   _CarrinhoCompraState(this.valor, this.id_compra);
 
   //Dropdown
-  String unidadeMedida = "";
-  var _unidades = ['Tipo', 'g', 'Kg', 'Unidade'];
-  var _itemSelecionado = 'Tipo';
-  String uni;
+  int _value = 0;
 
-  _unidadeMedida(String dado) {
-    setState(() {
-      uni = dado;
-    });
-
-    print("Unidade de medida: " + uni);
+  _onChanged(int valor) {
+    setState(() => _value = valor);
   }
-  //
 
   AnimationController _controller;
   Animation<double> _animation;
@@ -172,28 +164,30 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                        padding: EdgeInsets.all(4),
                         width: 100,
-                        child: DropdownButton<String>(
-                            items: _unidades.map((String dropDownStringItem) {
-                              return DropdownMenuItem<String>(
-                                value: dropDownStringItem,
-                                child: Text(
-                                  dropDownStringItem,
-                                  textAlign: TextAlign.center,
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (String novoItemSelecionado) {
-                              _dropDownItemSelected(novoItemSelecionado);
-
-                              setState(() {
-                                this._itemSelecionado = novoItemSelecionado;
-                              });
-
-                              _unidadeMedida(_itemSelecionado);
-                            },
-                            value: _itemSelecionado),
+                        child: DropdownButton(
+                          hint: Text("Tipo"),
+                          value: _value,
+                          items: [
+                            DropdownMenuItem(
+                              child: Text("g"),
+                              value: 1,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("Kg"),
+                              value: 2,
+                            ),
+                            DropdownMenuItem(
+                              child: Text("Unidade"),
+                              value: 3,
+                            ),
+                          ],
+                          onChanged: (value) {
+                            setState(() => _value = value);
+                            print(_value);
+                          },
+                        ),
                       ),
                     ],
                   )
@@ -944,11 +938,5 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
           backgroundColor: finalizada == 1 ? Colors.green : Colors.pink,
         ),*/
         );
-  }
-
-  void _dropDownItemSelected(String novoItem) {
-    setState(() {
-      this._itemSelecionado = novoItem;
-    });
   }
 }
