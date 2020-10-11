@@ -253,7 +253,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
           DateTime.now().toString(), status, carrinho, compra_id);
 
       int resultado = await _db.salvarItem(item);
-
+      setState(() => _value = null);
       int sugestao =
           await _db.salvarSugestao(item.nome, item.local, item.compra_id);
     } else {
@@ -304,7 +304,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
     listaTemporaria = null;
 
-    print("Lista itens: " + itensRecuperados.toString());
+    //print("Lista itens: " + itensRecuperados.toString());
   }
 
   //Atualiza a coluna Status
