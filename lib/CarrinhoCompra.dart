@@ -8,7 +8,6 @@ import 'ConfirmaCompra.dart';
 import 'Home.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
-import 'controller/controller.dart';
 import 'model/Compra.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_masked_text/flutter_masked_text.Dart';
@@ -30,43 +29,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     with TickerProviderStateMixin {
   _CarrinhoCompraState(this.valor, this.id_compra);
 
-  int _escolhaUsuario;
-
   //Dropdown
   int _value;
-
-  _dropdownTipo() {
-    return Container(
-      padding: EdgeInsets.all(8),
-      width: 100,
-      child: DropdownButton(
-        hint: Text("Tipo"),
-        value: _value,
-        items: [
-          DropdownMenuItem(
-            child: Text("g"),
-            value: 1,
-          ),
-          DropdownMenuItem(
-            child: Text("Kg"),
-            value: 2,
-          ),
-          DropdownMenuItem(
-            child: Text(
-              "Unidade",
-            ),
-            value: 3,
-          ),
-        ],
-        onChanged: (value) {
-          setState(() => _value = value);
-          print(_value);
-        },
-      ),
-    );
-  }
-
-  /** */
 
   AnimationController _controller;
   Animation<double> _animation;
@@ -261,10 +225,18 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
           _qtdeController.text = '0';
         });
       }
-    } else if (_localController.text.isEmpty == true) {
-      setState(() {
-        _localController.text = 'Local';
-      });
+
+      if (_localController.text.isEmpty == true) {
+        setState(() {
+          _localController.text = 'Local';
+        });
+
+        if (_nomeController.text.isEmpty == true) {
+          setState(() {
+            _nomeController.text = 'Descrição';
+          });
+        }
+      }
     }
 
     String nome = _nomeController.text;
@@ -277,7 +249,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     int compra_id = id_compra;
 
     if (itemSelecionado == null) {
-      Item item = Item(nome, preco, qtde, total, local,
+      Item item = Item(nome, preco, qtde, total, local, _value,
           DateTime.now().toString(), status, carrinho, compra_id);
 
       int resultado = await _db.salvarItem(item);
@@ -290,6 +262,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       itemSelecionado.qtde = qtde;
       itemSelecionado.total = itemSelecionado.preco * itemSelecionado.qtde;
       itemSelecionado.local = local;
+      itemSelecionado.unidade = _value;
       itemSelecionado.data = DateTime.now().toString();
 
       int resultado = await _db.atualizarItem(itemSelecionado);
@@ -331,7 +304,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
     listaTemporaria = null;
 
-    // print("Lista itens: " + itensRecuperados.toString());
+    print("Lista itens: " + itensRecuperados.toString());
   }
 
   //Atualiza a coluna Status
