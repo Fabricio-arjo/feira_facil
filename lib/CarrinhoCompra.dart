@@ -8,10 +8,12 @@ import 'ConfirmaCompra.dart';
 import 'Home.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
+import 'controller/controller.dart';
 import 'model/Compra.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_masked_text/flutter_masked_text.Dart';
 import 'package:animations/animations.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class CarrinhoCompra extends StatefulWidget {
   CarrinhoCompra({this.valor, this.id_compra});
@@ -28,12 +30,43 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     with TickerProviderStateMixin {
   _CarrinhoCompraState(this.valor, this.id_compra);
 
-  //Dropdown
-  int _value = 0;
+  int _escolhaUsuario;
 
-  _onChanged(int valor) {
-    setState(() => _value = valor);
+  //Dropdown
+  int _value;
+
+  _dropdownTipo() {
+    return Container(
+      padding: EdgeInsets.all(8),
+      width: 100,
+      child: DropdownButton(
+        hint: Text("Tipo"),
+        value: _value,
+        items: [
+          DropdownMenuItem(
+            child: Text("g"),
+            value: 1,
+          ),
+          DropdownMenuItem(
+            child: Text("Kg"),
+            value: 2,
+          ),
+          DropdownMenuItem(
+            child: Text(
+              "Unidade",
+            ),
+            value: 3,
+          ),
+        ],
+        onChanged: (value) {
+          setState(() => _value = value);
+          print(_value);
+        },
+      ),
+    );
   }
+
+  /** */
 
   AnimationController _controller;
   Animation<double> _animation;
@@ -60,7 +93,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   int voltar, indice = 1;
 
 // Parâmetro opcional se existir item é uma edição
-  _exibirTelaCadastro({Item item}) {
+  _exibirTelaCadastro({Item item}) async {
     String textoSalvarAtualizar = "";
 
     if (item == null) {
@@ -83,119 +116,124 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       textoSalvarAtualizar = "Atualizar";
     }
 
-    showDialog(
+    await showDialog(
         context: context,
-        builder: (context) {
+        builder: (BuildContext context) {
           return SingleChildScrollView(
               child: AlertDialog(
             title: Text(textoSalvarAtualizar + " Item",
                 style: TextStyle(
                   color: Colors.purple,
                 )),
-            content: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(bottom: 5),
-                    child: SimpleAutoCompleteTextField(
-                      key: null,
-                      controller: _nomeController,
-                      suggestions: suggestions,
-                      keyboardType: TextInputType.text,
-                      textChanged: (text) => currentText = text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: "Descrição",
+            content: StatefulBuilder(
+                builder: (BuildContext context, StateSetter setState) {
+              return Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.only(bottom: 5),
+                      child: SimpleAutoCompleteTextField(
+                        key: null,
+                        controller: _nomeController,
+                        suggestions: suggestions,
+                        keyboardType: TextInputType.text,
+                        textChanged: (text) => currentText = text,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: "Descrição",
 
-                        //hintText: "Ex: Arroz"
+                          //hintText: "Ex: Arroz"
+                        ),
                       ),
                     ),
-                  ),
-                  //Inicio da linha
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(4),
-                        width: 100,
-                        child: TextField(
-                          controller: _precoController,
-                          //autofocus: true,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Preço",
-                            //hintText: "Ex: 8.50"
+                    //Inicio da linha
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 100,
+                          child: TextField(
+                            controller: _precoController,
+                            //autofocus: true,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Preço",
+                              //hintText: "Ex: 8.50"
+                            ),
                           ),
                         ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(4),
-                        width: 135,
-                        child: SimpleAutoCompleteTextField(
-                          key: null,
-                          controller: _localController,
-                          keyboardType: TextInputType.text,
-                          suggestions: suggestions,
-                          textChanged: (text) => currentText = text,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Local",
-                            //hintText: "Ex: Estabelecimento"
+                        Container(
+                          padding: EdgeInsets.all(4),
+                          width: 135,
+                          child: SimpleAutoCompleteTextField(
+                            key: null,
+                            controller: _localController,
+                            keyboardType: TextInputType.text,
+                            suggestions: suggestions,
+                            textChanged: (text) => currentText = text,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Local",
+                              //hintText: "Ex: Estabelecimento"
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          width: 100,
+                          child: TextField(
+                            controller: _qtdeController,
+                            keyboardType: TextInputType.number,
+                            //autofocus: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "Qtde",
+                              //hintText: "Ex: 1"
+                            ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        width: 100,
-                        child: TextField(
-                          controller: _qtdeController,
-                          keyboardType: TextInputType.number,
-                          //autofocus: true,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: "Qtde",
-                            //hintText: "Ex: 1"
+                        Container(
+                          padding: EdgeInsets.all(8),
+                          width: 100,
+                          child: DropdownButton(
+                            hint: Text("Tipo"),
+                            value: _value,
+                            items: [
+                              DropdownMenuItem(
+                                child: Text("g"),
+                                value: 1,
+                              ),
+                              DropdownMenuItem(
+                                child: Text("Kg"),
+                                value: 2,
+                              ),
+                              DropdownMenuItem(
+                                child: Text(
+                                  "Unidade",
+                                ),
+                                value: 3,
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() => _value = value);
+                              print(_value);
+                            },
                           ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(4),
-                        width: 100,
-                        child: DropdownButton(
-                          hint: Text("Tipo"),
-                          value: _value,
-                          items: [
-                            DropdownMenuItem(
-                              child: Text("g"),
-                              value: 1,
-                            ),
-                            DropdownMenuItem(
-                              child: Text("Kg"),
-                              value: 2,
-                            ),
-                            DropdownMenuItem(
-                              child: Text("Unidade"),
-                              value: 3,
-                            ),
-                          ],
-                          onChanged: (value) {
-                            setState(() => _value = value);
-                            print(_value);
-                          },
-                        ),
-                      ),
-                    ],
-                  )
+                        )
+                      ],
+                    )
 
-                  //Fim da Linha
-                ],
-              ),
-            ),
+                    //Fim da Linha
+                  ],
+                ),
+              );
+            }),
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
