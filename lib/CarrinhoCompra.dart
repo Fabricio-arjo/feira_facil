@@ -76,6 +76,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       _precoController.text = item.preco.toStringAsFixed(2);
       _qtdeController.text = item.qtde.toString();
       _localController.text = item.local.toString();
+      _value = item.unidade;
 
       textoSalvarAtualizar = "Atualizar";
     }
