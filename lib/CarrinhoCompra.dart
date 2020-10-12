@@ -243,7 +243,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     String nome = _nomeController.text;
     double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',', '.'));
-    double total = preco * qtde;
+    double conversao;
+    if (_value == 1) {
+      setState(() => conversao = (qtde / 1000));
+    } else {
+      setState(() => conversao = (qtde / 1));
+    }
+    double total = preco * conversao;
     String local = _localController.text;
     int status;
     int carrinho = 0;
@@ -261,12 +267,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       itemSelecionado.nome = nome;
       itemSelecionado.preco = preco;
       itemSelecionado.qtde = qtde;
-      itemSelecionado.total = itemSelecionado.preco * itemSelecionado.qtde;
+      itemSelecionado.total = preco * conversao;
       itemSelecionado.local = local;
       itemSelecionado.unidade = _value;
       itemSelecionado.data = DateTime.now().toString();
 
       int resultado = await _db.atualizarItem(itemSelecionado);
+      setState(() => _value = null);
 
       int sugestao = await _db.salvarSugestao(itemSelecionado.nome,
           itemSelecionado.local, itemSelecionado.compra_id);
@@ -587,10 +594,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
             ),
             centerTitle: true,
             actions: <Widget>[
-              Icon(
-                Icons.shopping_cart,
-                color: Colors.white,
-                size: 30,
+              Container(
+                padding: EdgeInsets.only(right: 10),
+                child: Icon(
+                  Icons.shopping_cart,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
             ]),
         body: Column(
