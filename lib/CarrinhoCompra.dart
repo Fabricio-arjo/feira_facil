@@ -31,6 +31,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
   //Dropdown
   int _value;
+  String unidade;
 
   AnimationController _controller;
   Animation<double> _animation;
@@ -255,6 +256,20 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     int carrinho = 0;
     int compra_id = id_compra;
 
+    switch (_value) {
+      case 1:
+        setState(() => unidade = "g");
+        break;
+      case 2:
+        setState(() => unidade = "Kg");
+        break;
+      case 3:
+        setState(() => unidade = "un");
+        break;
+      default:
+        setState(() => unidade = "");
+    }
+
     if (itemSelecionado == null) {
       Item item = Item(nome, preco, qtde, total, local, _value,
           DateTime.now().toString(), status, carrinho, compra_id);
@@ -273,7 +288,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       itemSelecionado.data = DateTime.now().toString();
 
       int resultado = await _db.atualizarItem(itemSelecionado);
-      setState(() => _value = null);
 
       int sugestao = await _db.salvarSugestao(itemSelecionado.nome,
           itemSelecionado.local, itemSelecionado.compra_id);
@@ -292,7 +306,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     _precoController.clear();
     _qtdeController.clear();
     _localController.clear();
-
+    setState(() => _value = null);
     _recuperarItens(id_compra);
   }
 
@@ -794,8 +808,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                         .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toString()
-                                                        .replaceAll(".", ","),
+                                                        .toStringAsFixed(0)
+                                                        .replaceAll(".", ",") +
+                                                    " " +
+                                                    unidade.toString(),
                                                 style: TextStyle(
                                                     decoration: TextDecoration
                                                         .lineThrough,
@@ -812,8 +828,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                         .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toString()
-                                                        .replaceAll(".", ","),
+                                                        .toStringAsFixed(0)
+                                                        .replaceAll(".", ",") +
+                                                    " " +
+                                                    unidade.toString(),
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.purple,
