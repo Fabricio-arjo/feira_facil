@@ -31,7 +31,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
   //Dropdown
   int _value;
-  String unidade;
 
   AnimationController _controller;
   Animation<double> _animation;
@@ -97,6 +96,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    Text("Era para ser aqui"),
                     Container(
                       padding: EdgeInsets.only(bottom: 5),
                       child: SimpleAutoCompleteTextField(
@@ -109,7 +109,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                           border: OutlineInputBorder(),
                           labelText: "Descrição",
 
-                          //hintText: "Ex: Arroz"
+                          /*hintText: "Ex: Arroz"*/
                         ),
                       ),
                     ),
@@ -188,12 +188,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                             ],
                             onChanged: (value) {
                               setState(() => _value = value);
-                              print(_value);
+
+                              //print(_value);
                             },
                           ),
                         )
                       ],
-                    )
+                    ),
 
                     //Fim da Linha
                   ],
@@ -204,8 +205,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
               FlatButton(
                   onPressed: () {
                     _salvarAtualizarItem(itemSelecionado: item);
-
-                    Navigator.pop(context);
+                    //Navigator.pop(context);
                   },
                   child: Icon(Icons.check)),
               FlatButton(
@@ -233,11 +233,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
           _localController.text = 'Local';
         });
 
-        if (_nomeController.text.isEmpty == true) {
+        /*if (_nomeController.text.isEmpty == true) {
           setState(() {
             _nomeController.text = 'Descrição';
           });
-        }
+        }*/
       }
     }
 
@@ -252,29 +252,33 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     }
     double total = preco * conversao;
     String local = _localController.text;
+    String sigla;
     int status;
     int carrinho = 0;
     int compra_id = id_compra;
 
     switch (_value) {
       case 1:
-        setState(() => unidade = "g");
+        setState(() => sigla = "g");
         break;
       case 2:
-        setState(() => unidade = "Kg");
+        setState(() => sigla = "Kg");
         break;
       case 3:
-        setState(() => unidade = "un");
+        setState(() => sigla = "un");
         break;
       default:
-        setState(() => unidade = "");
+        setState(() => sigla = "");
     }
 
     if (itemSelecionado == null) {
-      Item item = Item(nome, preco, qtde, total, local, _value,
+      Item item = Item(nome, preco, qtde, total, local, _value, sigla,
           DateTime.now().toString(), status, carrinho, compra_id);
 
-      int resultado = await _db.salvarItem(item);
+      if (_nomeController.text.isNotEmpty) {
+        int resultado = await _db.salvarItem(item);
+      }
+
       setState(() => _value = null);
       int sugestao =
           await _db.salvarSugestao(item.nome, item.local, item.compra_id);
@@ -285,9 +289,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       itemSelecionado.total = preco * conversao;
       itemSelecionado.local = local;
       itemSelecionado.unidade = _value;
+      itemSelecionado.sigla = sigla;
+
       itemSelecionado.data = DateTime.now().toString();
 
       int resultado = await _db.atualizarItem(itemSelecionado);
+      Navigator.pop(context);
 
       int sugestao = await _db.salvarSugestao(itemSelecionado.nome,
           itemSelecionado.local, itemSelecionado.compra_id);
@@ -326,7 +333,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
     listaTemporaria = null;
 
-    //print("Lista itens: " + itensRecuperados.toString());
+    // print("Lista itens: " + itensRecuperados.toString());
   }
 
   //Atualiza a coluna Status
@@ -576,7 +583,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
   }
 
@@ -810,8 +816,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                     item.qtde
                                                         .toStringAsFixed(0)
                                                         .replaceAll(".", ",") +
-                                                    " " +
-                                                    unidade.toString(),
+                                                    "" +
+                                                    item.sigla,
                                                 style: TextStyle(
                                                     decoration: TextDecoration
                                                         .lineThrough,
@@ -830,8 +836,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                     item.qtde
                                                         .toStringAsFixed(0)
                                                         .replaceAll(".", ",") +
-                                                    " " +
-                                                    unidade.toString(),
+                                                    "" +
+                                                    item.sigla,
                                                 style: TextStyle(
                                                     fontSize: 15,
                                                     color: Colors.purple,

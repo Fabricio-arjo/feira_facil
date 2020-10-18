@@ -46,6 +46,7 @@ class DatabaseHelper {
         "total DOUBLE,"
         "local VARCHAR,"
         "unidade INTEGER,"
+        "sigla VARCHAR,"
         "data DATETIME,"
         "status INTEGER,"
         "carrinho INTEGER,"

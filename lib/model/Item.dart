@@ -8,6 +8,7 @@ class Item {
   double total;
   String local;
   int unidade;
+  String sigla;
   String data;
   bool selected = false;
   int status;
@@ -17,7 +18,7 @@ class Item {
   //Objeto item
 
   Item(this.nome, this.preco, this.qtde, this.total, this.local, this.unidade,
-      this.data, this.status, this.carrinho, this.compra_id);
+      this.sigla, this.data, this.status, this.carrinho, this.compra_id);
 
   //Receber map e converter para objeto
   Item.fromMap(Map map) {
@@ -28,6 +29,7 @@ class Item {
     this.total = map["total"];
     this.local = map["local"];
     this.unidade = map["unidade"];
+    this.sigla = map["sigla"];
     this.data = map["data"];
     this.status = map["status"];
     this.carrinho = map["carrinho"];
@@ -43,6 +45,7 @@ class Item {
       "total": this.total,
       "local": this.local,
       "unidade": this.unidade,
+      "sigla": this.sigla,
       "data": this.data,
       "status": this.status,
       "carrinho": this.carrinho,
