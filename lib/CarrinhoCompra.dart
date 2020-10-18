@@ -8,6 +8,7 @@ import 'ConfirmaCompra.dart';
 import 'Home.dart';
 import 'ListaCompras.dart';
 import 'package:feira_facil/helper/DatabaseHelper.dart';
+import 'controller.dart';
 import 'model/Compra.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_masked_text/flutter_masked_text.Dart';
@@ -28,6 +29,10 @@ class CarrinhoCompra extends StatefulWidget {
 class _CarrinhoCompraState extends State<CarrinhoCompra>
     with TickerProviderStateMixin {
   _CarrinhoCompraState(this.valor, this.id_compra);
+
+  final controller = Controller();
+
+  FocusNode _focus = new FocusNode();
 
   //Dropdown
   int _value;
@@ -96,11 +101,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text("Era para ser aqui"),
+                    Observer(builder: (_) {
+                      return Container(
+                          padding: EdgeInsets.all(5),
+                          child: Text(controller.mensagemErro,
+                              style: TextStyle(color: Colors.red)));
+                    }),
                     Container(
                       padding: EdgeInsets.only(bottom: 5),
                       child: SimpleAutoCompleteTextField(
                         key: null,
+                        focusNode: _focus,
                         controller: _nomeController,
                         suggestions: suggestions,
                         keyboardType: TextInputType.text,
@@ -204,12 +215,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
+                    controller.validaCampo(_nomeController.text);
                     _salvarAtualizarItem(itemSelecionado: item);
+
                     //Navigator.pop(context);
                   },
                   child: Icon(Icons.check)),
               FlatButton(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    controller.validaCampo(_nomeController.text);
+                    Navigator.pop(context);
+                  },
                   child: Icon(Icons.close)),
             ],
           ));
@@ -217,30 +233,25 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   }
 
   _salvarAtualizarItem({Item itemSelecionado}) async {
-    if (_precoController.text.isEmpty == true) {
-      setState(() {
-        _precoController.text = '0';
-      });
-
-      if (_qtdeController.text.isEmpty == true) {
+    if (_nomeController.text.isNotEmpty) {
+      if (_precoController.text.isEmpty == true) {
         setState(() {
-          _qtdeController.text = '0';
-        });
-      }
-
-      if (_localController.text.isEmpty == true) {
-        setState(() {
-          _localController.text = 'Local';
+          _precoController.text = '0';
         });
 
-        /*if (_nomeController.text.isEmpty == true) {
+        if (_qtdeController.text.isEmpty == true) {
           setState(() {
-            _nomeController.text = 'Descrição';
+            _qtdeController.text = '0';
           });
-        }*/
+        }
+
+        if (_localController.text.isEmpty == true) {
+          setState(() {
+            _localController.text = 'Local';
+          });
+        }
       }
     }
-
     String nome = _nomeController.text;
     double preco = double.parse(_precoController.text.replaceAll(',', '.'));
     double qtde = double.parse(_qtdeController.text.replaceAll(',', '.'));
@@ -277,6 +288,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
       if (_nomeController.text.isNotEmpty) {
         int resultado = await _db.salvarItem(item);
+        Navigator.pop(context);
       }
 
       setState(() => _value = null);
@@ -579,6 +591,11 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   @override
   void initState() {
     super.initState();
+    _focus.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    debugPrint("Focus: " + _focus.hasFocus.toString());
   }
 
   @override
