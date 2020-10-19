@@ -15,4 +15,9 @@ abstract class ControllerBase with Store {
       mensagemErro = "";
     }
   }
+
+  @action
+  resetCampo() {
+    mensagemErro = "";
+  }
 }

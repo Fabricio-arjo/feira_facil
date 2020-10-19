@@ -223,7 +223,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                   child: Icon(Icons.check)),
               FlatButton(
                   onPressed: () {
-                    controller.validaCampo(_nomeController.text);
+                    controller.resetCampo();
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.close)),

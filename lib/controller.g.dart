@@ -39,6 +39,17 @@ mixin _$Controller on ControllerBase, Store {
   }
 
   @override
+  dynamic resetCampo() {
+    final _$actionInfo = _$ControllerBaseActionController.startAction(
+        name: 'ControllerBase.resetCampo');
+    try {
+      return super.resetCampo();
+    } finally {
+      _$ControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 mensagemErro: ${mensagemErro}
