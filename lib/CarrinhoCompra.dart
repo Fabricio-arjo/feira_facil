@@ -262,6 +262,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       setState(() => conversao = (qtde / 1));
     }
     double total = preco * conversao;
+    double valorTotal = double.parse(total.toStringAsFixed(2));
     String local = _localController.text;
     String sigla;
     int status;
@@ -283,7 +284,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     }
 
     if (itemSelecionado == null) {
-      Item item = Item(nome, preco, qtde, total, local, _value, sigla,
+      Item item = Item(nome, preco, qtde, valorTotal, local, _value, sigla,
           DateTime.now().toString(), status, carrinho, compra_id);
 
       if (_nomeController.text.isNotEmpty) {
@@ -345,7 +346,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
     listaTemporaria = null;
 
-    // print("Lista itens: " + itensRecuperados.toString());
+    //print("Lista itens: " + itensRecuperados.toString());
   }
 
   //Atualiza a coluna Status
@@ -393,18 +394,24 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
   //Atualiza o saldo após a adição de itens ao carrinho
   _disponivel(double totalItem, bool operacao) async {
+    //print("Item:  " + totalItem.toString());
     if ((totalItem != null) && (operacao == true)) {
       setState(() {
         valorCompra -= totalItem;
         saldoCompra += totalItem;
       });
+
+      //print("Saldo: " + saldoCompra.toString());
+
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     } else if ((totalItem != null) && (operacao == false)) {
+      print("Item:  " + totalItem.toStringAsFixed(2));
       setState(() {
         valorCompra += totalItem;
         saldoCompra -= totalItem;
       });
 
+      print("Saldo: " + saldoCompra.toStringAsFixed(2));
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     } else {
       valorCompra = valorCompra;
@@ -591,11 +598,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   @override
   void initState() {
     super.initState();
-    _focus.addListener(_onFocusChange);
-  }
-
-  void _onFocusChange() {
-    debugPrint("Focus: " + _focus.hasFocus.toString());
   }
 
   @override
