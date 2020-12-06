@@ -129,7 +129,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                       children: <Widget>[
                         Container(
                           padding: EdgeInsets.all(4),
-                          width: 100,
+                          width: 110,
                           child: TextField(
                             controller: _precoController,
                             //autofocus: true,
@@ -143,7 +143,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                         ),
                         Container(
                           padding: EdgeInsets.all(4),
-                          width: 135,
+                          width: 120,
                           child: SimpleAutoCompleteTextField(
                             key: null,
                             controller: _localController,
@@ -395,23 +395,28 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
   //Atualiza o saldo após a adição de itens ao carrinho
   _disponivel(double totalItem, bool operacao) async {
     //print("Item:  " + totalItem.toString());
+
+    if (saldoCompra < 0) {
+      saldoCompra *= -1;
+    }
+
     if ((totalItem != null) && (operacao == true)) {
       setState(() {
         valorCompra -= totalItem;
         saldoCompra += totalItem;
       });
 
-      //print("Saldo: " + saldoCompra.toString());
+      print("Saldo: " + saldoCompra.toStringAsFixed(2));
 
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     } else if ((totalItem != null) && (operacao == false)) {
-      print("Item:  " + totalItem.toStringAsFixed(2));
+      print("Valor Item:  " + totalItem.toStringAsFixed(2));
       setState(() {
         valorCompra += totalItem;
         saldoCompra -= totalItem;
       });
 
-      print("Saldo: " + saldoCompra.toStringAsFixed(2));
+      print("Saldo usado: " + saldoCompra.toStringAsFixed(2));
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     } else {
       valorCompra = valorCompra;
@@ -789,22 +794,30 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             setState(() {
                                               if (item.selected == false) {
                                                 item.selected = true;
+                                                /*print(
+                                                    "Valor Compra: ${valorCompra}  Valor Item: ${item.total} Select: " +
+                                                        item.selected
+                                                            .toString());*/
                                               } else {
                                                 item.selected = false;
+                                                /*print(
+                                                    "Item total: ${item.total} Select: " +
+                                                        item.selected
+                                                            .toString());*/
                                               }
                                               _atualizaStatus(
                                                   item, item.selected);
                                             });
 
-                                            if (valorCompra < item.total) {
+                                            if (item.total < valorCompra) {
+                                              _disponivel(
+                                                  item.total, item.selected);
+                                            } else {
                                               setState(() {
                                                 item.status = 0;
                                               });
                                               _disponivel(0, item.selected);
                                               _controleSaldo(item.total);
-                                            } else {
-                                              _disponivel(
-                                                  item.total, item.selected);
                                             }
                                           }
                                         : () {},
@@ -853,7 +866,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                         .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toStringAsFixed(0)
+                                                        .toStringAsFixed(2)
                                                         .replaceAll(".", ",") +
                                                     "" +
                                                     item.sigla,
