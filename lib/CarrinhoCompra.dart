@@ -905,7 +905,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                     .replaceAll(".", ",") +
                                                 "   Qtde: " +
                                                 item.qtde
-                                                    .toStringAsFixed(3)
+                                                    .toStringAsFixed(2)
                                                     .replaceAll(".", ",") +
                                                 item.sigla,
                                             style: TextStyle(
