@@ -15,7 +15,7 @@ class _ListaComprasState extends State<ListaCompras> {
   List<Compra> _itens = List<Compra>();
 
   TextEditingController _valorController = TextEditingController();
-  double novoValor,saldoCompra = 0;
+  double novoValor, saldoCompra = 0;
 
   var _db = DatabaseHelper();
 
@@ -65,7 +65,8 @@ class _ListaComprasState extends State<ListaCompras> {
             actions: <Widget>[
               FlatButton(
                   onPressed: () {
-                    _atualizaValorCompra(double.parse(_valorController.text), compra.idDcompra);
+                    _atualizaValorCompra(
+                        double.parse(_valorController.text), compra.idDcompra);
                     Navigator.pop(context);
                   },
                   child: Icon(Icons.check)),
@@ -78,8 +79,7 @@ class _ListaComprasState extends State<ListaCompras> {
   }
 
   _atualizaValorCompra(double novoValor, int id) async {
- 
-   List itensCompra = await _db.recuperarItens(id);
+    List itensCompra = await _db.recuperarItens(id);
 
     for (var i in itensCompra) {
       Item item = Item.fromMap(i);
@@ -90,10 +90,8 @@ class _ListaComprasState extends State<ListaCompras> {
         });
       }
     }
-    await _db.atualizaValorCompra(novoValor, saldoCompra , id);
+    await _db.atualizaValorCompra(novoValor, saldoCompra, id);
   }
-
-
 
   _recuperaCompras() async {
     List comprasRealizadas = await _db.recuperaCompra();
@@ -134,7 +132,7 @@ class _ListaComprasState extends State<ListaCompras> {
     return snackbar;
   }
 
-   _snackBar2() {
+  _snackBar2() {
     final snackbar = SnackBar(
       //backgroundColor: Colors.green,
       duration: Duration(seconds: 3),
@@ -151,7 +149,6 @@ class _ListaComprasState extends State<ListaCompras> {
 
   @override
   Widget build(BuildContext context) {
-   
     _recuperaCompras();
 
     return Scaffold(
@@ -206,8 +203,12 @@ class _ListaComprasState extends State<ListaCompras> {
                                     builder: (BuildContext context) {
                                       return AlertDialog(
                                         //title: Text("Excluir",style: TextStyle(color: Colors.purple)),
-                                        content: Text("\nConfirmar exclusão ?",style: TextStyle(color: Colors.purple,fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
+                                        content: Text(
+                                          "\nConfirmar exclusão ?",
+                                          style: TextStyle(
+                                              color: Colors.purple,
+                                              fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.center,
                                         ),
                                         actions: <Widget>[
                                           FlatButton(
@@ -226,16 +227,14 @@ class _ListaComprasState extends State<ListaCompras> {
                                         ],
                                       );
                                     });
-                              } else if (direction == DismissDirection.startToEnd) {
-                               
-                                 if(compra.finalizada == 1){
-                                     _snackBar2();
-                                 }else{
-                                     _exibirTelaEdicao(compra);
-                                    
-                                 }
-                                  
+                              } else if (direction ==
+                                  DismissDirection.startToEnd) {
+                                if (compra.finalizada == 1) {
+                                  _snackBar2();
+                                } else {
+                                  _exibirTelaEdicao(compra);
                                 }
+                              }
                             },
                             key: Key(compra.idDcompra.toString()),
                             child: GestureDetector(
@@ -243,22 +242,41 @@ class _ListaComprasState extends State<ListaCompras> {
                               color: Colors.grey[100],
                               elevation: 3.0,
                               child: ListTile(
-                                title: Text("Valor R\$: " +
-                                    compra.valorLimite.toStringAsFixed(2).replaceAll('.', ','),
-                                    style: TextStyle(
-                                       color: Colors.purple,
-                                       fontWeight: FontWeight.bold
-                                       )
-                                    ),
-                                subtitle: Text(" Data: " +
-                                    _formatarData(compra.dataCompra),
-                                    style: TextStyle(
-                                       color: Colors.purple,
-                                       )
-                                    ),
-                                   trailing: compra.finalizada == 1 ? Icon(Icons.lock, size: 30, color: Colors.red[300])
-                                   : Icon(Icons.shopping_basket, size: 30, color: Colors.purple ),
-                                              
+                                title: compra.finalizada == 1
+                                    ? Text(
+                                        "Valor R\$: " +
+                                            compra.valorLimite
+                                                .toStringAsFixed(2)
+                                                .replaceAll('.', ','),
+                                        style: TextStyle(
+                                            color: Colors.red[300],
+                                            fontWeight: FontWeight.bold))
+                                    : Text(
+                                        "Valor R\$: " +
+                                            compra.valorLimite
+                                                .toStringAsFixed(2)
+                                                .replaceAll('.', ','),
+                                        style: TextStyle(
+                                            color: Colors.purple,
+                                            fontWeight: FontWeight.bold)),
+                                subtitle: compra.finalizada == 1
+                                    ? Text(
+                                        " Data: " +
+                                            _formatarData(compra.dataCompra),
+                                        style: TextStyle(
+                                          color: Colors.red[300],
+                                        ))
+                                    : Text(
+                                        " Data: " +
+                                            _formatarData(compra.dataCompra),
+                                        style: TextStyle(
+                                          color: Colors.purple,
+                                        )),
+                                trailing: compra.finalizada == 1
+                                    ? Icon(Icons.lock,
+                                        size: 30, color: Colors.red[300])
+                                    : Icon(Icons.shopping_basket,
+                                        size: 30, color: Colors.purple),
                                 onTap: () {
                                   Navigator.pushReplacement(
                                       context,

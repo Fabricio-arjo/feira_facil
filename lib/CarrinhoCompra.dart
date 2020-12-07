@@ -846,7 +846,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                         .replaceAll(".", ",") +
                                                     "   Qtde: " +
                                                     item.qtde
-                                                        .toStringAsFixed(0)
+                                                        .toStringAsFixed(2)
                                                         .replaceAll(".", ",") +
                                                     "" +
                                                     item.sigla,
@@ -876,20 +876,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                     fontWeight: FontWeight.bold,
                                                     letterSpacing: 2),
                                               ),
-
-                                        //Exibir ações dentro do item de lista.
-
-                                        /*trailing: item.status != 1
-                                            ? Icon(
-                                                Icons.add_shopping_cart,
-                                                color: Colors.purple,
-                                                size: 30,
-                                              )
-                                            : Icon(
-                                                Icons.shopping_cart,
-                                                color: Colors.green,
-                                                size: 30,
-                                              ),*/
                                       ),
                                     ),
                                   ),
@@ -920,7 +906,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                 "   Qtde: " +
                                                 item.qtde
                                                     .toStringAsFixed(3)
-                                                    .replaceAll(".", ","),
+                                                    .replaceAll(".", ",") +
+                                                item.sigla,
                                             style: TextStyle(
                                                 decoration:
                                                     TextDecoration.lineThrough,
@@ -945,20 +932,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 2),
                                           ),
-
-                                    //Exibir ações dentro do item de lista.
-
-                                    /*trailing: item.status != 1
-                                        ? Icon(
-                                            Icons.add_shopping_cart,
-                                            color: Colors.purple,
-                                            size: 30,
-                                          )
-                                        : Icon(
-                                            Icons.shopping_cart,
-                                            color: Colors.green,
-                                            size: 30,
-                                          ),*/
                                   ),
                                 );
                         },
