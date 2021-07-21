@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class Compra {
   int idDcompra;
   double valorLimite;

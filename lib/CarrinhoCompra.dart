@@ -830,17 +830,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             ? Icon(
                                                 Icons.check_box_outline_blank,
                                                 color: Colors.purple,
-                                                size: 30,
+                                                size: 15,
                                               )
                                             : Icon(
                                                 Icons.check_box,
                                                 color: Colors.green,
-                                                size: 30,
+                                                size: 15,
                                               ),
                                         title: item.status == 1
                                             ? Text(
                                                 item.nome +
-                                                    "     R\$:" +
+                                                    "  R\$:" +
                                                     item.preco
                                                         .toStringAsFixed(2)
                                                         .replaceAll(".", ",") +
@@ -853,10 +853,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                 style: TextStyle(
                                                     decoration: TextDecoration
                                                         .lineThrough,
-                                                    fontSize: 15,
+                                                    fontSize: 13,
                                                     color: Colors.green,
                                                     fontWeight: FontWeight.bold,
-                                                    letterSpacing: 2),
+                                                    letterSpacing: 1),
                                               )
                                             : Text(
                                                 item.nome +
@@ -871,10 +871,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                     "" +
                                                     item.sigla,
                                                 style: TextStyle(
-                                                    fontSize: 15,
+                                                    fontSize: 13,
                                                     color: Colors.purple,
                                                     fontWeight: FontWeight.bold,
-                                                    letterSpacing: 2),
+                                                    letterSpacing: 1),
                                               ),
                                       ),
                                     ),
@@ -889,12 +889,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                         ? Icon(
                                             Icons.check_box_outline_blank,
                                             color: Colors.purple,
-                                            size: 30,
+                                            size: 20,
                                           )
                                         : Icon(
                                             Icons.check_box,
                                             color: Colors.green,
-                                            size: 30,
+                                            size: 20,
                                           ),
                                     title: item.status == 1
                                         ? Text(

@@ -3,99 +3,81 @@ import 'package:flutter/material.dart';
 import 'AdicionarCompra.dart';
 
 class Home extends StatefulWidget {
- Home({this.voltar});
+  Home({this.voltar});
 
- final int voltar;
+  final int voltar;
 
   @override
   _HomeState createState() => _HomeState(this.voltar);
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-_HomeState(this.voltar);
+  _HomeState(this.voltar);
 
-   int voltar;
+  int voltar;
 
-   int _tabIndex = 0;
-   TabController _tabController;
+  int _tabIndex = 0;
+  TabController _tabController;
 
- @override
+  @override
   void initState() {
-     super.initState();
-     
-      _tabController = TabController(
-         length: 2, 
-         vsync: this  //SingleTickerProviderStateMixin  colocar no HomeState
-      );
+    super.initState();
+
+    _tabController = TabController(
+        length: 2,
+        vsync: this //SingleTickerProviderStateMixin  colocar no HomeState
+        );
   }
 
- @override
+  @override
   void dispose() {
     super.dispose();
     _tabController.dispose();
   }
 
   void _toggleTab(int voltar) {
-    
     if (voltar != null) {
-       _tabController.animateTo(voltar);
-    }else{
-       _tabController.animateTo(0);
+      _tabController.animateTo(voltar);
+    } else {
+      _tabController.animateTo(0);
     }
-   
 
-   // print("Indice: ${voltar}");
-
+    // print("Indice: ${voltar}");
   }
 
   @override
   Widget build(BuildContext context) {
-   
-   _toggleTab(voltar);
+    _toggleTab(voltar);
 
     return Scaffold(
-
-        appBar: AppBar(
-                   
-           backgroundColor: Colors.purple,
-            title: Text("",
-              style: TextStyle(
-                fontStyle: FontStyle.normal,
-                fontWeight: FontWeight.bold,
-              ),
+      appBar: AppBar(
+          backgroundColor: Colors.purple,
+          title: Text(
+            "",
+            style: TextStyle(
+              fontStyle: FontStyle.normal,
+              fontWeight: FontWeight.bold,
             ),
-           centerTitle: true,
-
-           bottom: TabBar(
-                  
-                  indicatorWeight: 4,
-                  labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  controller: _tabController,
-                  indicatorColor: Colors.white,
-                 
-                  tabs: <Widget>[
-
-                          Tab(text: "Nova"), 
-                          Tab(text: "Realizadas"),
-                         
-                  ],
-                
-                )
-            ),
-           
-            body: TabBarView(
-              
-                controller: _tabController,
-                children: <Widget>[
-
-                  AdicionarCompra(),
-                  ListaCompras(),
-
-                ],
-              ),
-          
-          );
-            
+          ),
+          centerTitle: true,
+          bottom: TabBar(
+            indicatorWeight: 4,
+            labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            controller: _tabController,
+            indicatorColor: Colors.white,
+            tabs: <Widget>[
+              Tab(text: "Nova"),
+              Tab(text: "Realizadas"),
+            ],
+          )),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          AdicionarCompra(),
+          ListaCompras(),
+        ],
+      ),
+    );
   }
 }
 
