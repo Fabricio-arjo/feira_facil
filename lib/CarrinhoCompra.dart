@@ -392,12 +392,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     await _recuperarItens(id_compra);
   }
 
-  //Atualiza o saldo após a adição de itens ao carrinho
+  //Atualiza o saldo após a adição de itens ao CARRINHO
   _disponivel(double totalItem, bool operacao) async {
     //print("Item:  " + totalItem.toString());
 
     if (saldoCompra < 0) {
-      saldoCompra *= -1;
+      setState(() {
+        saldoCompra = saldoCompra * -1;
+      });
     }
 
     if ((totalItem != null) && (operacao == true)) {
@@ -410,7 +412,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     } else if ((totalItem != null) && (operacao == false)) {
-      print("Valor Item:  " + totalItem.toStringAsFixed(2));
+      print("Valor deduzido:  " + totalItem.toStringAsFixed(2));
+
       setState(() {
         valorCompra += totalItem;
         saldoCompra -= totalItem;
@@ -657,7 +660,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                     Text(
                       "Disponível",
                       style: TextStyle(
-                          color: Colors.purple,
+                          color: Colors.deepPurple,
                           fontSize: 15,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold),
@@ -665,7 +668,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                     Text(
                       "R\$${valorCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                       style: TextStyle(
-                          color: Colors.purple,
+                          color: Colors.green,
                           fontSize: 28,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold),
@@ -673,7 +676,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                     Text(
                       "Usado",
                       style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.deepPurple,
                           fontSize: 16,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold),
@@ -681,7 +684,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                     Text(
                       "R\$${saldoCompra.toStringAsFixed(2).replaceAll('.', ',')}",
                       style: TextStyle(
-                          color: Colors.blue,
+                          color: Colors.red,
                           fontSize: 20,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.bold),
@@ -739,7 +742,6 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                           context: context,
                                           builder: (BuildContext context) {
                                             return AlertDialog(
-                                              //title: Text("Excluir",style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold)),
                                               content: Text(
                                                 "\Confirmar exclusão ?",
                                                 style: TextStyle(
@@ -788,6 +790,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                       }
                                     }
                                   },
+
+                                  // GESTURE DETECTOR
                                   child: GestureDetector(
                                     onTap: finalizada != 1
                                         ? () {
@@ -810,14 +814,16 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             });
 
                                             if (item.total < valorCompra) {
-                                              _disponivel(
-                                                  item.total, item.selected);
+                                              setState(() {
+                                                _disponivel(
+                                                    item.total, item.selected);
+                                              });
                                             } else {
                                               setState(() {
                                                 item.status = 0;
+                                                _disponivel(0, item.selected);
+                                                _controleSaldo(item.total);
                                               });
-                                              _disponivel(0, item.selected);
-                                              _controleSaldo(item.total);
                                             }
                                           }
                                         : () {},
@@ -830,12 +836,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             ? Icon(
                                                 Icons.check_box_outline_blank,
                                                 color: Colors.purple,
-                                                size: 15,
+                                                size: 17,
                                               )
                                             : Icon(
                                                 Icons.check_box,
-                                                color: Colors.green,
-                                                size: 15,
+                                                color: Colors.blueGrey,
+                                                size: 17,
                                               ),
                                         title: item.status == 1
                                             ? Text(
@@ -853,8 +859,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                 style: TextStyle(
                                                     decoration: TextDecoration
                                                         .lineThrough,
-                                                    fontSize: 13,
-                                                    color: Colors.green,
+                                                    fontSize: 13.5,
+                                                    color: Colors.blueGrey,
                                                     fontWeight: FontWeight.bold,
                                                     letterSpacing: 1),
                                               )
@@ -871,7 +877,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                     "" +
                                                     item.sigla,
                                                 style: TextStyle(
-                                                    fontSize: 13,
+                                                    fontSize: 13.5,
                                                     color: Colors.purple,
                                                     fontWeight: FontWeight.bold,
                                                     letterSpacing: 1),
@@ -889,12 +895,12 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                         ? Icon(
                                             Icons.check_box_outline_blank,
                                             color: Colors.purple,
-                                            size: 20,
+                                            size: 17,
                                           )
                                         : Icon(
                                             Icons.check_box,
                                             color: Colors.green,
-                                            size: 20,
+                                            size: 17,
                                           ),
                                     title: item.status == 1
                                         ? Text(
@@ -911,23 +917,23 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             style: TextStyle(
                                                 decoration:
                                                     TextDecoration.lineThrough,
-                                                fontSize: 15,
+                                                fontSize: 13,
                                                 color: Colors.green,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 2),
                                           )
                                         : Text(
                                             item.nome +
-                                                "     R\$:" +
+                                                "  R\$:" +
                                                 item.preco
                                                     .toStringAsFixed(2)
                                                     .replaceAll(".", ",") +
                                                 "   Qtde: " +
                                                 item.qtde
-                                                    .toStringAsFixed(3)
+                                                    .toStringAsFixed(2)
                                                     .replaceAll(".", ","),
                                             style: TextStyle(
-                                                fontSize: 15,
+                                                fontSize: 13,
                                                 color: Colors.purple,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 2),
