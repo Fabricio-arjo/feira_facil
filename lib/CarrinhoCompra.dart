@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:feira_facil/model/Item.dart';
 import 'package:feira_facil/model/Sugestao.dart';
 import 'package:flutter/material.dart';
@@ -374,52 +373,49 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
     return dataFormatada;
   }
 
-  _removerItem(int id, double compra, bool operacao) async {
-    double valor;
+  //Atualizar os saldos nesse método, apos remover item do carrinho...
+  _removerItem(int id, double itemTotal, bool selected) async {
+    double valorComprado;
+
+    //print("Id ${id}  item ${itemTotal} operação ${selected}");
 
     setState(() {
-      valor = compra;
+      valorComprado = itemTotal;
     });
 
     await _db.removerItem(id);
+    if ((itemTotal != null) && (selected == true)) {
+      setState(() {
+        valorCompra += valorComprado;
+        saldoCompra -= valorComprado;
+      });
+    }
 
-    //print("Compra: ${valor}");
-
-    _disponivel(valor, false);
-
-    _snackBar();
-
+    await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     await _recuperarItens(id_compra);
   }
 
   //Atualiza o saldo após a adição de itens ao CARRINHO
-  _disponivel(double totalItem, bool operacao) async {
-    //print("Item:  " + totalItem.toString());
-
-    if (saldoCompra < 0) {
-      setState(() {
-        saldoCompra = saldoCompra * -1;
-      });
-    }
-
-    if ((totalItem != null) && (operacao == true)) {
+  _disponivel(double totalItem, bool selected) async {
+    //Item adicionado ao carrinho
+    if ((totalItem != null) && (selected == true)) {
       setState(() {
         valorCompra -= totalItem;
         saldoCompra += totalItem;
       });
 
-      print("Saldo: " + saldoCompra.toStringAsFixed(2));
-
+      print(
+          "Limite disponível: ${valorCompra.toStringAsFixed(2)} Valor comprado ${saldoCompra.toStringAsFixed(2)} selected ${selected}");
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
-    } else if ((totalItem != null) && (operacao == false)) {
-      print("Valor deduzido:  " + totalItem.toStringAsFixed(2));
 
+      //Item removido do carrinho
+    } else if ((totalItem != null) && (selected == false)) {
       setState(() {
         valorCompra += totalItem;
         saldoCompra -= totalItem;
       });
-
-      print("Saldo usado: " + saldoCompra.toStringAsFixed(2));
+      print(
+          "Limite disponível: ${valorCompra.toStringAsFixed(2)} valor devolvido ${totalItem.toStringAsFixed(2)} Valor comprado ${saldoCompra.toStringAsFixed(2)} selected ${selected}");
       await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
     } else {
       valorCompra = valorCompra;
@@ -576,7 +572,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
       saldoCompra = dados[0]['saldo'];
     });
 
-    //print(" Valor ${valorCompra} - saldo compra ${saldoCompra} - finalizada ${finalizada}");
+    /*print(
+        " Limite disponível ${valorCompra} - valor comprado ${saldoCompra} - finalizada ${finalizada}");*/
   }
 
   int _selectedIndex = 0;
@@ -735,6 +732,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                       ],
                                     ),
                                   ),
+                                  // ignore: missing_return
                                   confirmDismiss: (direction) {
                                     if (direction ==
                                         DismissDirection.endToStart) {
@@ -753,10 +751,10 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                               actions: <Widget>[
                                                 FlatButton(
                                                   onPressed: () {
-                                                    _removerItem(
+                                                    print(_removerItem(
                                                         item.id,
                                                         item.total,
-                                                        item.selected);
+                                                        item.selected));
                                                     Navigator.pop(context);
                                                     _snackBar();
                                                   },
@@ -775,18 +773,17 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                         DismissDirection.startToEnd) {
                                       _exibirTelaCadastro(item: item);
 
+                                      // Atualiza limite de compra e valor compra caso valor do item seja editado.
                                       if (item.selected == true) {
-                                        compra = valorCompra;
-                                        saldo = saldoCompra;
+                                        setState(() {
+                                          compra = valorCompra;
+                                          saldo = saldoCompra;
+                                        });
 
                                         setState(() {
                                           compra += item.total;
                                           saldo -= item.total;
                                         });
-
-                                        print(compra.toString() +
-                                            " ---- " +
-                                            saldo.toString());
                                       }
                                     }
                                   },
@@ -798,21 +795,13 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             setState(() {
                                               if (item.selected == false) {
                                                 item.selected = true;
-                                                /*print(
-                                                    "Valor Compra: ${valorCompra}  Valor Item: ${item.total} Select: " +
-                                                        item.selected
-                                                            .toString());*/
                                               } else {
                                                 item.selected = false;
-                                                /*print(
-                                                    "Item total: ${item.total} Select: " +
-                                                        item.selected
-                                                            .toString());*/
                                               }
                                               _atualizaStatus(
                                                   item, item.selected);
                                             });
-
+                                            //Testa se valor do item é menor que o saldo disponível.
                                             if (item.total < valorCompra) {
                                               setState(() {
                                                 _disponivel(
@@ -821,7 +810,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                             } else {
                                               setState(() {
                                                 item.status = 0;
-                                                _disponivel(0, item.selected);
+
+                                                // _disponivel(0, item.selected);
+                                                //Mensagem informando que o saldo é menor
                                                 _controleSaldo(item.total);
                                               });
                                             }
@@ -899,7 +890,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                           )
                                         : Icon(
                                             Icons.check_box,
-                                            color: Colors.green,
+                                            color: Colors.blueGrey,
                                             size: 17,
                                           ),
                                     title: item.status == 1
@@ -918,7 +909,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
                                                 decoration:
                                                     TextDecoration.lineThrough,
                                                 fontSize: 13,
-                                                color: Colors.green,
+                                                color: Colors.blueGrey,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 2),
                                           )
