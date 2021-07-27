@@ -231,6 +231,14 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
         });
   }
 
+  //Popular itens
+  _populaItem() async {
+    Item item = Item("Item", 100.00, 1, 100.00, "Extra", 2, "Kg",
+        DateTime.now().toString(), 0, 0, 1);
+
+    int resultado = await _db.salvarItem(item);
+  }
+
   _salvarAtualizarItem({Item itemSelecionado}) async {
     if (_nomeController.text.isNotEmpty) {
       if (_precoController.text.isEmpty == true) {
@@ -345,7 +353,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
     listaTemporaria = null;
 
-    //print("Lista itens: " + itensRecuperados.toString());
+    print("Lista itens: " + itensRecuperados.toString());
   }
 
   //Atualiza a coluna Status
@@ -389,7 +397,7 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
         valorCompra += valorComprado;
         saldoCompra -= valorComprado;
       });
-    } else {
+    } else if ((itemTotal != null) && (selected == false)) {
       valorCompra = valorCompra;
       saldoCompra = saldoCompra;
     }
@@ -605,6 +613,8 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
 
   @override
   void initState() {
+    //Popula item
+    //_populaItem();
     super.initState();
   }
 

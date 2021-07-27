@@ -44,6 +44,11 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
     return snackbar;
   }
 
+  _populaBanco() async {
+    Compra compra = Compra(1000.00, 0, 0, DateTime.now().toString());
+    int resultado = await _db.compra1(compra);
+  }
+
   _salvarCompra() async {
     setState(() {
       limite = double.parse(valorController.text.replaceAll(",", "."));
@@ -65,6 +70,12 @@ class _AdicionarCompraState extends State<AdicionarCompra> {
     } else {
       _snackBar();
     }
+  }
+
+  @override
+  void initState() {
+    //_populaBanco();
+    super.initState();
   }
 
   @override

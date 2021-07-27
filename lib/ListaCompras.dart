@@ -110,7 +110,7 @@ class _ListaComprasState extends State<ListaCompras> {
 
     listaTemporaria = null;
 
-    //print("Lista compras: " + comprasRealizadas.toString());
+    print("Lista compras: " + comprasRealizadas.toString());
   }
 
   _removerCompra(int id) async {
@@ -196,6 +196,7 @@ class _ListaComprasState extends State<ListaCompras> {
                             ),
 
                             //direction: DismissDirection.horizontal,
+                            // ignore: missing_return
                             confirmDismiss: (direction) {
                               if (direction == DismissDirection.endToStart) {
                                 showDialog(

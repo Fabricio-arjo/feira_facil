@@ -80,6 +80,12 @@ class DatabaseHelper {
   }
 
   // ------------------------- Compra ---------------------------------------------
+  //Popula banco
+  Future<int> compra1(Compra compra) async {
+    var bancoDados = await db;
+    int resultado = await bancoDados.insert(tabela1, compra.toMap());
+    return resultado;
+  }
 
   Future<int> salvarCompra(Compra compra) async {
     var bancoDados = await db;
@@ -130,6 +136,15 @@ class DatabaseHelper {
   }
 
   //-------------------------------Itens ------------------------------------
+
+  //Popula itens
+  Future<int> populaItem(Item item) async {
+    var bancoDados = await db;
+
+    //Map da classe item.toMap(). Pois será usado várias vezes
+    int resultado = await bancoDados.insert(tabela2, item.toMap());
+    return resultado;
+  }
 
   Future<int> salvarItem(Item item) async {
     var bancoDados = await db;
