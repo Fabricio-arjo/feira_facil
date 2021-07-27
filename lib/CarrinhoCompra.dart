@@ -389,6 +389,9 @@ class _CarrinhoCompraState extends State<CarrinhoCompra>
         valorCompra += valorComprado;
         saldoCompra -= valorComprado;
       });
+    } else {
+      valorCompra = valorCompra;
+      saldoCompra = saldoCompra;
     }
 
     await _db.atualizaValorCompra(valorCompra, saldoCompra, id_compra);
